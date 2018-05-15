@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     nh.param<string>("path", path, "/dev/ttyACM0");
     nh.param<int>("channel", channel, 1);
 
-    if (fd = maestroConnect(path.c_str()) != -1)
+    if ((fd = maestroConnect(path.c_str())) != -1)
     {
         ROS_INFO("Maestro connected");
         int pos = maestroGetPosition(fd, channel);

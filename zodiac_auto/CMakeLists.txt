@@ -133,7 +133,8 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/zodiac_auto_node.cpp)
 add_executable(pololu src/pololu.cpp src/maestro.cpp)
-add_executable(regulator src/regulator.cpp)
+add_executable(motorCtr src/motorCtr.cpp src/jrk.cpp)
+## add_executable(regulator src/regulator.cpp)
 add_executable(localisation src/localisation.cpp)
 
 ## Rename C++ executable without prefix
@@ -153,9 +154,12 @@ add_executable(localisation src/localisation.cpp)
 target_link_libraries(pololu
   ${catkin_LIBRARIES}
 )
-target_link_libraries(regulator
+target_link_libraries(motorCtr
   ${catkin_LIBRARIES}
 )
+# target_link_libraries(regulator
+#   ${catkin_LIBRARIES}
+# )
 target_link_libraries(localisation
   ${catkin_LIBRARIES}
 )
