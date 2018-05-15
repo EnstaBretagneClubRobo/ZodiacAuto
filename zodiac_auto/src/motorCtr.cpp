@@ -35,8 +35,8 @@ int main(int argc, char **argv)
     {
         ROS_INFO("Jrk connected");
 
-        ROS_INFO("Jrk test");
-        jrkTest(fd);
+        // ROS_INFO("Jrk test");
+        // jrkTest(fd);
 
         ros::spin();
         close(fd);

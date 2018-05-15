@@ -34,10 +34,11 @@ int main(int argc, char **argv)
     if ((fd = maestroConnect(path.c_str())) != -1)
     {
         ROS_INFO("Maestro connected");
-        int pos = maestroGetPosition(fd, channel);
-        ROS_INFO("Position : %d", pos);
-        ROS_INFO("Setting to position : %d", pos+100);
-        maestroSetTarget(fd, channel, pos+100);
+
+        // int pos = maestroGetPosition(fd, channel);
+        // ROS_INFO("Position : %d", pos);
+        // ROS_INFO("Setting to position : %d", pos+100);
+        // maestroSetTarget(fd, channel, pos+100);
 
         ros::spin();
         close(fd);
