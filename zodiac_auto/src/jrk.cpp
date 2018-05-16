@@ -59,6 +59,12 @@ int jrkGetFeedback(int fd)
     return jrkGetVariable(fd, 0xA5);
 }
 
+// Gets the value of the jrk's Scaling Feedback variable (0-4095).
+int jrkGetScalingFeedback(int fd)
+{
+    return jrkGetVariable(fd, 0xA7);
+}
+
 // Gets the value of the jrk's Target variable (0-4095).
 int jrkGetTarget(int fd)
 {
@@ -79,7 +85,7 @@ int jrkSetTarget(int fd, unsigned short target)
 
 void jrkTest(int fd)
 {
-    int feedback = jrkGetFeedback(fd);
+    int feedback = jrkGetScalingFeedback(fd);
     printf("Current Feedback is %d.\n", feedback);
     int target = jrkGetTarget(fd);
     printf("Current Target is %d.\n", target);
