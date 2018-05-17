@@ -4,3 +4,6 @@
 [submodule "tritech_micron"]
 	path = tritech_micron
 	url = https://github.com/mcgill-robotics/ros-tritech-micron.git
+[submodule "razor_imu_9dof"]
+	path = razor_imu_9dof
+	url = https://github.com/KristofRobot/razor_imu_9dof.git
