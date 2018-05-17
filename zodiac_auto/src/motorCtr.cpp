@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     feedback_pub = nh.advertise<std_msgs::UInt16>("helm_fb", 1000);
 
     string path;
-    nh.param<string>("path", path, "pololu"); // pololu is an alias to the pololu USB virtual port path.
+    nh.param<string>("path", path, "/dev/pololu"); // /dev/pololu is an alias to the pololu USB virtual port path.
 
     if ((fd = jrkConnect(path.c_str()) ) != -1)
     {
