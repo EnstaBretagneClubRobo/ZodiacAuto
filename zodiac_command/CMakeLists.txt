@@ -136,9 +136,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_waypointMgr src/waypointMgr.cpp)
-add_executable(${PROJECT_NAME}_lineFollowing src/lineFollowing.cpp)
-add_executable(${PROJECT_NAME}_courseRegulator src/courseRegulator.cpp)
+add_executable(waypointMgr src/waypointMgr.cpp)
+add_executable(lineFollowing src/lineFollowing.cpp)
+add_executable(courseRegulator src/courseRegulator.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,14 +148,21 @@ add_executable(${PROJECT_NAME}_courseRegulator src/courseRegulator.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_waypointMgr ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_lineFollowing ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_courseRegulator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(waypointMgr ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(lineFollowing ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(courseRegulator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(waypointMgr
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(lineFollowing
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(courseRegulator
+  ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##
