@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             fb_msg.data = jrkGetScalingFeedback(fd);
             feedback_pub.publish(fb_msg);
 
-            bool motorOn = (0x2 & jrkGetErrorFlagsHalting(fd));
+            bool motorOn = !(0x2 & jrkGetErrorFlagsHalting(fd));
             motorOn_msg.data = motorOn;
             motorOn_pub.publish(motorOn_msg);
 
