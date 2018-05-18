@@ -1,0 +1,28 @@
+<launch>
+
+<group ns="zodiac_auto">
+
+<!-- GPS node -->
+<group ns="gps">
+<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true">
+<param name="_port" type="string" value="/dev/gps" />
+<param name="_baud" type="int" value="9600" />
+</node>
+</group>
+
+<!-- IMU node -->
+<!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
+<include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
+
+<!-- Sonar node -->
+<include file="$(find tritech_micron)/launch/tritech_micron.launch" />
+
+<!-- Pololu Jrk motorCtr node -->
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true">
+<param name="path" type="string" value="/dev/pololu" />
+</node>
+
+
+</group>
+
+</launch>
