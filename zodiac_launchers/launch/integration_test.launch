@@ -5,8 +5,8 @@
 <!-- GPS node -->
 <group ns="gps">
 <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true">
-<param name="_port" type="string" value="/dev/gps" />
-<param name="_baud" type="int" value="9600" />
+<param name="port" type="string" value="/dev/gps" />
+<param name="baud" type="int" value="9600" />
 </node>
 </group>
 
