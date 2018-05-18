@@ -71,6 +71,13 @@ int jrkGetTarget(int fd)
     return jrkGetVariable(fd, 0xA3);
 }
 
+// Gets a two-byte serial response reporting which errors are currently stopping the motor, and
+// it clears the corresponding error bits (except for the Awaiting Command error bit).
+int jrkGetErrorFlagsHalting(int fd)
+{
+    return jrkGetVariable(fd, 0xB3);
+}
+
 // Sets the jrk's Target variable (0-4095).
 int jrkSetTarget(int fd, unsigned short target)
 {

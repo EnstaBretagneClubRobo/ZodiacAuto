@@ -17,12 +17,16 @@
 <!-- Sonar node -->
 <include file="$(find tritech_micron)/launch/tritech_micron.launch" />
 
-<!-- Pololu node -->
+<!-- Pololu Jrk motorCtr node -->
 <node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true">
 <param name="path" type="string" value="/dev/pololu" />
 </node>
 
-
+<!-- waypointMgr node -->
+  <arg name="zodiacCommand_config_file" default="$(find zodiac_launchers)/config/zodiacCommand.yaml"/>
+  <node pkg="zodiac_command" type="waypointMgr" name="zodiac_command_waypointMgr" output="screen">
+    <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
+  </node>
 </group>
 
 </launch>
