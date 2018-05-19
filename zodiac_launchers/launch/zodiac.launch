@@ -4,10 +4,12 @@
 
 <!-- GPS node -->
 <group ns="gps">
-<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true">
-<param name="_port" type="string" value="/dev/gps" />
-<param name="_baud" type="int" value="9600" />
+<!-- <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true"> -->
+<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true">
+<param name="port" type="string" value="/dev/gps" />
+<param name="baud" type="int" value="9600" />
 </node>
+<node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true"/>
 </group>
 
 <!-- IMU node -->
