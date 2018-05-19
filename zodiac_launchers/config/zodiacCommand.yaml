@@ -1,1 +1,11 @@
-Kp : 1
+waypointMgr:
+  waypoint_radius : 2
+
+lineFollowing:
+  incidence_angle : 5.6
+  max_distance_from_line : 5.
+
+courseRegulator:
+  gain_P : 1.
+  gain_I : 0
+  gain_D : 0
