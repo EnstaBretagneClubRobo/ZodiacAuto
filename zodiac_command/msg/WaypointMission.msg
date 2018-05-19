@@ -1,4 +1,4 @@
-std_msgs/Int32MultiArray     waypointID
-std_msgs/Float32MultiArray   latitude
-std_msgs/Float32MultiArray   longitude
-std_msgs/Int8MultiArray      waypointReached
+int32     waypointID
+float64   latitude
+float64   longitude
+bool      waypointReached
