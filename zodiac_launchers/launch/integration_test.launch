@@ -3,12 +3,12 @@
 <group ns="zodiac_auto">
 
 <!-- GPS node -->
-<!-- <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true"> -->
-<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true">
+<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true">
+<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true"> -->
 <param name="port" type="string" value="/dev/gps" />
 <param name="baud" type="int" value="9600" />
 </node>
-<node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true"/>
+<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true"/> -->
 
 <!-- IMU node -->
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
