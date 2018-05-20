@@ -107,8 +107,8 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES zodiac_command
+  INCLUDE_DIRS include
+ # LIBRARIES zodiac_command
   CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
@@ -120,7 +120,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -137,9 +137,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(waypointMgr src/waypointMgr.cpp)
-add_executable(lineFollowing src/lineFollowing.cpp)
-add_executable(courseRegulator src/courseRegulator.cpp)
+add_executable(waypointMgr src/waypointMgr.cpp src/mathUtility.cpp)
+add_executable(lineFollowing src/lineFollowing.cpp src/mathUtility.cpp)
+add_executable(courseRegulator src/courseRegulator.cpp src/mathUtility.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
