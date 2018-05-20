@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
     
-    helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_cmd", 1);
+    helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_angle_cmd", 1);
 
     ros::Rate loop_rate(1);
     while (ros::ok())
