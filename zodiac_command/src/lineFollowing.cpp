@@ -35,7 +35,6 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
     
@@ -45,7 +44,10 @@ int main(int argc, char **argv)
     // nhp.param<float>("lineFollowing/incidence_angle", kp, 0);
     // cout << "kp=" << kp << endl;
 
-    ros::Rate loop_rate(1);
+    double loopRate;
+    nhp.param<double>("lineFollowing/loop_rate", loopRate, 1);
+    ros::Rate loop_rate(loopRate);
+
     while (ros::ok())
     {
         desiredCourse_pub.publish(desiredCourse_msg);

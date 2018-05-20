@@ -2,10 +2,12 @@ waypointMgr:
   waypoint_radius : 2
 
 lineFollowing:
+  loop_rate : 1.
   incidence_angle : 5.6
   max_distance_from_line : 5.
 
 courseRegulator:
+  loop_rate : 2.
   gain_P : 1.
   gain_I : 0
   gain_D : 0

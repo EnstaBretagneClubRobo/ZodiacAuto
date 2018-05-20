@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "courseRegulator");
     ros::NodeHandle nh;
+    ros::NodeHandle nhp("~");
 
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
@@ -46,7 +47,10 @@ int main(int argc, char **argv)
     
     helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_angle_cmd", 1);
 
-    ros::Rate loop_rate(1);
+    double loopRate;
+    nhp.param<double>("courseRegulator/loop_rate", loopRate, 1);
+    ros::Rate loop_rate(loopRate);
+
     while (ros::ok())
     {
         helmCmd_pub.publish(helmCmd_msg);
