@@ -122,6 +122,8 @@ void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     geometry_msgs::Vector3 linearVelocity = msg->twist.linear;
     gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2)); // TOCHECK
     gpsCourse = mathUtility::limitAngleRange(atan2(linearVelocity.y, linearVelocity.x)); //TOCHECK
+    // cout << "gpsSpeed" << gpsSpeed << endl;
+    // cout << "gpsCourse" << gpsSpeed << endl;
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -131,7 +133,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
 
-    double imuHeading = yaw; //TOCHECK
+    double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw)); //TOCHECK
     boatHeading = mathUtility::limitAngleRange(imuHeading + magneticDeclination);
 }
 
