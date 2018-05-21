@@ -30,8 +30,8 @@ vector<zodiac_command::WaypointMission> waypointLine;
 double boatLatitude = DATA_OUT_OF_RANGE;
 double boatLongitude = DATA_OUT_OF_RANGE;
 
-double incidenceAngle;   // degrees
-double maxDistanceFromLine; // meters
+double incidenceAngle;   // degrees     [1]: (gamma_infiniy).
+double maxDistanceFromLine; // meters   [1]: cutoff distance (r). 
 double waypointRadius; // meters
 
 
@@ -159,6 +159,8 @@ int main(int argc, char **argv)
             desiredCourse_msg.data = (int) targetCourse;
             desiredCourse_pub.publish(desiredCourse_msg);
         }
+        else
+            ROS_WARN("lineFollowing : waiting for topic");
 
         ros::spinOnce();
         loop_rate.sleep();

@@ -27,6 +27,9 @@ double gpsCourse = DATA_OUT_OF_RANGE;   // degrees
 double boatHeading = DATA_OUT_OF_RANGE; // degrees
 int desiredCourse = DATA_OUT_OF_RANGE;  // degrees
 
+double I = 0; // integral sum for PIDregulator
+double oldCourseError = 0; // courseError at t-1 for PIDregulator
+
 int maxHelmAngle; // degrees
 int regulatorType; // 1: sinus, 2: PID
 double gainP;
@@ -35,6 +38,7 @@ double gainD;
 double magneticDeclination; // degrees
 double course_estim_speed1; // m/s
 double course_estim_speed2; // m/s
+double loopRate; // Hz
 
 // Returns an estimation of the vessel course (angle of the velocity vector).
 // boatSpeed < speed_1 : boatCourse = boatHeading
@@ -94,8 +98,21 @@ double regulatorSinus(const double courseError)
 // out : helmCmd in degrees
 double regulatorPID(const double courseError)
 {
-    //TODO
-    return 0;
+    double P = gainP*courseError;
+    double D = gainD*(courseError-oldCourseError)*loopRate;
+    double helmCmd = P+I+D;
+
+    I = I + gainI*courseError/loopRate;
+    oldCourseError = courseError;
+
+    // Anti wind up and max command
+    if (abs(helmCmd) > maxHelmAngle)
+    {
+        helmCmd = mathUtility::sgn(helmCmd)*maxHelmAngle;
+        I = 0;
+    }
+
+    return helmCmd;
 }
 
 
@@ -139,7 +156,6 @@ int main(int argc, char **argv)
     nhp.param<double>("courseRegulator/course_estimation/speed_2", course_estim_speed2, 1);
     nhp.param<double>("imu/magnetic_declination", magneticDeclination, 0);
 
-    double loopRate;
     nhp.param<double>("courseRegulator/loop_rate", loopRate, 1);
     ros::Rate loop_rate(loopRate);
 
@@ -159,6 +175,8 @@ int main(int argc, char **argv)
             }        
             helmCmd_pub.publish(helmCmd_msg);
         }
+        else
+            ROS_WARN("courseRegulator : waiting for topic");
 
         ros::spinOnce();
         loop_rate.sleep();
