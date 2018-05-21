@@ -1,13 +1,13 @@
 waypointMgr:
-  waypoint_radius : 2
+  waypoint_radius : 2 # meters
 
 lineFollowing:
-  loop_rate : 1.
-  incidence_angle : 5.6
-  max_distance_from_line : 5.
+  loop_rate : 1.  # Hz
+  incidence_angle : 90 # degrees
+  max_distance_from_line : 20. # meters
 
 courseRegulator:
-  loop_rate : 2.
+  loop_rate : 1.  # Hz  
   gain_P : 1.
   gain_I : 0
   gain_D : 0

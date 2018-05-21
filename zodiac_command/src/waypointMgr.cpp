@@ -33,13 +33,14 @@ bool nextWaypointReached()
             //Calculate distance to waypoint
             double DistanceToWaypoint = mathUtility::calculateDTW(boatLongitude, boatLatitude, waypointMission.at(i).longitude, waypointMission.at(i).latitude);
             // cout << "DistanceToWaypoint: " << DistanceToWaypoint << endl;
-            
+            // cout << "Waypoint Radius: " << waypointRadius << endl;
             if(DistanceToWaypoint > waypointRadius)
             {
                 return false;
             }
             else
             {
+                ROS_INFO("Waypoint reached");
                 waypointMission.at(i).waypointReached = 1;
                 return true;
             }
