@@ -30,9 +30,9 @@ vector<zodiac_command::WaypointMission> waypointLine;
 double boatLatitude = DATA_OUT_OF_RANGE;
 double boatLongitude = DATA_OUT_OF_RANGE;
 
-float incidenceAngle;
-float maxDistanceFromLine;
-double waypointRadius;
+double incidenceAngle;   // degrees
+double maxDistanceFromLine; // meters
+double waypointRadius; // meters
 
 
 double calculateAngleOfDesiredTrajectory(const double m_nextWaypointLon, const double m_nextWaypointLat, 
@@ -80,7 +80,7 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
     // std::cout << "phi : " << phi <<std::endl;
 
     // Calculate the target course in nominal mode.     [1]:(theta_*)   [2]:(theta_r)
-    double targetCourse = phi + (2 * incidenceAngle/M_PI) * atan(signedDistance/maxDistanceFromLine);
+    double targetCourse = phi + (2 * mathUtility::degreeToRadian(incidenceAngle)/M_PI) * atan(signedDistance/maxDistanceFromLine);
     targetCourse = mathUtility::limitRadianAngleRange(targetCourse); // in north east down reference frame.
     // std::cout << "targetCourse: " << targetCourse <<std::endl;
 
@@ -137,8 +137,8 @@ int main(int argc, char **argv)
     
     desiredCourse_pub = nh.advertise<std_msgs::Int32>("desired_course", 1);
 
-    nhp.param<float>("lineFollowing/incidence_angle", incidenceAngle, 90);
-    nhp.param<float>("lineFollowing/max_distance_from_line", maxDistanceFromLine, 20);
+    nhp.param<double>("lineFollowing/incidence_angle", incidenceAngle, 90);
+    nhp.param<double>("lineFollowing/max_distance_from_line", maxDistanceFromLine, 20);
     nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 5);
     // cout << "incidenceAngle=" << incidenceAngle << endl;
 

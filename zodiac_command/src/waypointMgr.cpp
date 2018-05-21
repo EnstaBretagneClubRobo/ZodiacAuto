@@ -18,13 +18,13 @@ ros::Publisher waypointLine_pub;
 ros::Publisher statusWaypointMission_pub;
 
 vector<zodiac_command::WaypointMission> waypointMission;
-double boatLatitude;
-double boatLongitude;
+double boatLatitude;    // degrees
+double boatLongitude;   // degrees
 
-double waypointRadius;
+double waypointRadius;  // meters
 
 
-bool nextWaypointReached()
+bool isNextWaypointReached()
 {
     for (int i=0; i<waypointMission.size(); i++)
     {
@@ -114,7 +114,7 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
         boatLatitude = fix_msg->latitude;
         boatLongitude = fix_msg->longitude;
 
-        if (nextWaypointReached())
+        if (isNextWaypointReached())
         {
             publishStatusWaypointMission();
         }

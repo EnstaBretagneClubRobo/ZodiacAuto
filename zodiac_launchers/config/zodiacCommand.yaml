@@ -7,7 +7,17 @@ lineFollowing:
   max_distance_from_line : 20. # meters
 
 courseRegulator:
-  loop_rate : 1.  # Hz  
-  gain_P : 1.
-  gain_I : 0
-  gain_D : 0
+  loop_rate : 1.  # Hz
+  max_helm_angle : 25  # degrees
+  regulator_type : 1   # 1: sinus, 2: PID
+  PID :
+    gain_P : 1.
+    gain_I : 0
+    gain_D : 0
+  course_estimation :
+    speed_1: 0.4  # m/s   boatSpeed < speed_1 : boatCourse = boatHeading
+    speed_2: 0.6  # m/s   boatSpeed > speed_2 : boatCourse = gpsCourse
+                  # speed_1 < boatSpeed < speed_2 : boatCourse = combinaison of both
+
+imu:
+  magnetic_declination : 0  # degrees

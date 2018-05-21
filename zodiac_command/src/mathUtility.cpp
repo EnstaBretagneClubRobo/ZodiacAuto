@@ -1,5 +1,16 @@
 #include <zodiac_command/mathUtility.h>
 
+
+int mathUtility::sgn(double value)
+{
+	if(value == 0) return 0;
+	if(value < 0) return -1;
+	if(value > 0) return 1;
+
+	return 0;
+}
+
+
 double mathUtility::degreeToRadian(double degrees)
 {
 	return degrees * M_PI / 180;
@@ -8,6 +19,39 @@ double mathUtility::degreeToRadian(double degrees)
 double mathUtility::radianToDegree(double radians)
 {
 	return radians / M_PI * 180;
+}
+
+double mathUtility::limitAngleRange(double angle)
+{
+	const double fullRevolution = 360;
+	const double minAngle = 0;
+
+	while (angle < minAngle)
+		angle += fullRevolution;
+
+	while (angle >= minAngle + fullRevolution)
+		angle -= fullRevolution;
+
+	return angle;
+
+	// NOTE - Maël: An other possibility to set the angle in ]0, 360[ is to use a sawtooth function.
+	// return radianToDegree(2*atan(tan((degreeToRadian(angle) - M_PI)/2)) + M_PI);
+}
+
+double mathUtility::limitAngleRange180(double angle)
+{
+	const double fullRevolution = 360;
+	const double minAngle = -180;
+
+	while (angle < minAngle)
+		angle += fullRevolution;
+
+	while (angle >= minAngle + fullRevolution)
+		angle -= fullRevolution;
+
+	return angle;
+
+	// NOTE - Maël: An other possibility to set the angle in ]-180, 180[) is to use a sawtooth function.	
 }
 
 double mathUtility::limitRadianAngleRange(double angle)
@@ -26,6 +70,18 @@ double mathUtility::limitRadianAngleRange(double angle)
 	// NOTE - Maël: An other possibility to set the angle in ]0, 360[ is to use a sawtooth function.
 	// return 2*atan(tan((angle - M_PI)/2)) + M_PI;
 }
+
+/*
+* Returns the angle value corresponding to x by the linear function defined by the points (x1,angle1) and (x2,angle2).
+* Angles are in degree.
+*/
+double mathUtility::linearFunctionBetweenAngle(double x, double x1, double x2, double angle1, double angle2)
+{
+    float a = (limitAngleRange180(angle2 - angle1))/(x2 - x1); // Warning : error if x2==x1
+    float b = angle2 - a*x2;
+    return limitAngleRange(a*x + b);
+}
+
 
 double mathUtility::calculateDTW(double gpsLon, double gpsLat, double waypointLon, double waypointLat)
 {
