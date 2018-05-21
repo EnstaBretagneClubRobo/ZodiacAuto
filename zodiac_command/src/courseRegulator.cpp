@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-* ROS node "courseRegulator" subscribes to "fix", "imu" and "desired_course" topics. 
+* ROS node "courseRegulator" subscribes to "vel", "imu" and "desired_course" topics. 
 * It publishes "helm_cmd" topic.
 *
 * ------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 #include <ros/ros.h>
 #include <string.h>
 #include <iostream>
-#include <sensor_msgs/NavSatFix.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
 #include "std_msgs/Int32.h"
 #include <zodiac_command/mathUtility.h>
+#include <tf/transform_datatypes.h>
 
 
 using namespace std;
@@ -116,15 +117,21 @@ double regulatorPID(const double courseError)
 }
 
 
-void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& msg)
+void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
-    gpsSpeed = 0; // TODO
-    gpsCourse = mathUtility::limitAngleRange(0); //TODO
+    geometry_msgs::Vector3 linearVelocity = msg->twist.linear;
+    gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2)); // TOCHECK
+    gpsCourse = mathUtility::limitAngleRange(atan2(linearVelocity.y, linearVelocity.x)); //TOCHECK
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
 {
-    double imuHeading = 0; //TODO
+    tf::Quaternion q(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+
+    double imuHeading = yaw; //TOCHECK
     boatHeading = mathUtility::limitAngleRange(imuHeading + magneticDeclination);
 }
 
@@ -140,7 +147,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
+    ros::Subscriber vel_sub = nh.subscribe("vel", 1, vel_callback);
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
     
