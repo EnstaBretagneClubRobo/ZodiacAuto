@@ -7,6 +7,7 @@
 
 #include <ros/ros.h>
 #include <string.h>
+#include <math.h>
 #include <iostream>
 #include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
@@ -130,8 +131,8 @@ void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     // cout << "gpsCourse" << gpsSpeed << endl; TO PUBLISH
     std_msgs::Float64 gpsSpeed_msg;
     std_msgs::Float64 gpsCourse_msg;
-    gpsSpeed_msg.data = gpsSpeed;
-    gpsCourse_msg.data = gpsCourse;
+    if (!isnan(gpsSpeed)) gpsSpeed_msg.data = gpsSpeed;
+    if (!isnan(gpsCourse)) gpsCourse_msg.data = gpsCourse;
     gpsSpeed_pub.publish(gpsSpeed_msg);
     gpsCourse_pub.publish(gpsCourse_msg);
 }

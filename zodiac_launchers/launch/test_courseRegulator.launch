@@ -14,6 +14,16 @@
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
 <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
 
+
+<!-- Pololu Jrk motorCtr node -->
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true" >
+  <param name="path" type="string" value="/dev/pololu" />
+</node>
+
+
+
+<arg name="zodiacCommand_config_file" default="$(find zodiac_launchers)/config/zodiacCommand.yaml"/>
+
 <!-- courseRegulator node -->
 <node pkg="zodiac_command" type="courseRegulator" name="courseRegulator" output="screen">
   <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
