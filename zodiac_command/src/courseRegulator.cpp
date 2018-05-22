@@ -11,6 +11,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
 #include "std_msgs/Int32.h"
+#include "std_msgs/Float64.h"
 #include <zodiac_command/mathUtility.h>
 #include <tf/transform_datatypes.h>
 
@@ -21,6 +22,9 @@ using namespace std;
 
 // The helm command correspond to the angle of the hord board motor with the boat (in degree)
 ros::Publisher helmCmd_pub;
+ros::Publisher gpsSpeed_pub;
+ros::Publisher gpsCourse_pub;
+ros::Publisher boatHeading_pub;
 std_msgs::Int32 helmCmd_msg;
 
 double gpsSpeed = DATA_OUT_OF_RANGE;    // m/s
@@ -122,8 +126,14 @@ void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     geometry_msgs::Vector3 linearVelocity = msg->twist.linear;
     gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2)); // TOCHECK
     gpsCourse = mathUtility::limitAngleRange(atan2(linearVelocity.y, linearVelocity.x)); //TOCHECK
-    // cout << "gpsSpeed" << gpsSpeed << endl;
-    // cout << "gpsCourse" << gpsSpeed << endl;
+    // cout << "gpsSpeed" << gpsSpeed << endl; TO PUBLISH
+    // cout << "gpsCourse" << gpsSpeed << endl; TO PUBLISH
+    std_msgs::Float64 gpsSpeed_msg;
+    std_msgs::Float64 gpsCourse_msg;
+    gpsSpeed_msg.data = gpsSpeed;
+    gpsCourse_msg.data = gpsCourse;
+    gpsSpeed_pub.publish(gpsSpeed_msg);
+    gpsCourse_pub.publish(gpsCourse_msg);
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -134,7 +144,11 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     m.getRPY(roll, pitch, yaw);
 
     double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw)); //TOCHECK
+//	TO PUBLISH
     boatHeading = mathUtility::limitAngleRange(imuHeading + magneticDeclination);
+    std_msgs::Float64 boatHeading_msg;
+    boatHeading_msg.data = boatHeading;
+    boatHeading_pub.publish(boatHeading_msg);
 }
 
 void desiredCourse_callback(const std_msgs::Int32::ConstPtr& msg)
@@ -154,6 +168,9 @@ int main(int argc, char **argv)
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
     
     helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_angle_cmd", 1);
+    gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gpsSpeed", 1);
+    gpsCourse_pub = nh.advertise<std_msgs::Float64>("gpsCourse", 1);
+    boatHeading_pub = nh.advertise<std_msgs::Float64>("boatHeading", 1);
 
     nhp.param<int>("courseRegulator/max_helm_angle", maxHelmAngle, 25);
     nhp.param<int>("courseRegulator/regulator_type", regulatorType, 1);
