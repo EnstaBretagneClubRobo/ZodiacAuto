@@ -126,7 +126,7 @@ void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
     geometry_msgs::Vector3 linearVelocity = msg->twist.linear;
     gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2)); // TOCHECK
-    gpsCourse = mathUtility::limitAngleRange(atan2(linearVelocity.y, linearVelocity.x)); //TOCHECK
+    gpsCourse = mathUtility::limitAngleRange(mathUtility::radianToDegree(atan2(linearVelocity.y, linearVelocity.x))); //TOCHECK
     // cout << "gpsSpeed" << gpsSpeed << endl; TO PUBLISH
     // cout << "gpsCourse" << gpsSpeed << endl; TO PUBLISH
     std_msgs::Float64 gpsSpeed_msg;
