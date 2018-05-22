@@ -37,10 +37,9 @@ int map_helmFeedback_to_helmAngle(int helm_fb){
 
 void cmd_callback(const std_msgs::Int32::ConstPtr& msg)
 {
-	// For now, the command is directly sent to the Pololu.
     int target = map_helmAnge_to_helmTarget(msg->data);
     jrkSetTarget(fd, target);
-    cout << "target=" << target << endl;
+    //cout << "target=" << target << endl;
 }
 
 int main(int argc, char **argv)
