@@ -8,10 +8,10 @@ lineFollowing:
 
 courseRegulator:
   loop_rate : 2.  # Hz
-  max_helm_angle : 10  # degrees
+  max_helm_angle : 7  # degrees
   regulator_type : 1   # 1: sinus, 2: PID
   PID :
-    gain_P : 1.
+    gain_P : 0.1
     gain_I : 0
     gain_D : 0
   course_estimation :
