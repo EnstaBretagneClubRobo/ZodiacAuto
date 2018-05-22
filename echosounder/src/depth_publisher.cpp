@@ -6,7 +6,7 @@
 
 #include <ros/ros.h>
 #include <string.h>
-#include <serial/serial.h>
+#include "serial/serial.h"
 #include <iostream>
 #include "std_msgs/Float64.h"
 
@@ -15,9 +15,6 @@ using namespace std;
 serial::Serial ser;
 
 ros::Publisher depth_pub;
-
-std_msgs::Float64 depth_msg;
-
 
 int main(int argc, char **argv)
 {
@@ -60,11 +57,12 @@ int main(int argc, char **argv)
 
         if(ser.available()){
             ROS_DEBUG_STREAM("Reading from serial port");
-           // std_msgs::String result;
-           // result.data = ser.read(ser.available());
-            depth_pub.data = ser.read(ser.available()) //TODO PARSING
-	    ROS_DEBUG_STREAM("Read: " << result.data);
-            read_pub.publish(result);
+	    string msg = ser.read(ser.avaible());
+	    string depth = msg.substr(6,9);
+            std_msgs::Float64 depth_msg;
+            depth_msg.data = depth;
+	    ROS_DEBUG_STREAM("Read: " << depth_msg.data);
+            depth_pub.publish(depth_msg);
         }
         loop_rate.sleep();
 
