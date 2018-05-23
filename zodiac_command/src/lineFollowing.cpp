@@ -18,12 +18,15 @@
 #include <zodiac_command/mathUtility.h>
 #include <sensor_msgs/NavSatFix.h>
 #include "std_msgs/Int32.h"
+#include "std_msgs/Float64.h"
+
 
 using namespace std;
 
 #define DATA_OUT_OF_RANGE -2000
 
 ros::Publisher desiredCourse_pub;
+ros::Publisher signedDistance_pub;
 std_msgs::Int32 desiredCourse_msg;
 
 vector<zodiac_command::WaypointMission> waypointLine;
@@ -73,6 +76,9 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
     double signedDistance = mathUtility::calculateSignedDistanceToLine(m_nextWaypointLon, m_nextWaypointLat, m_prevWaypointLon,
         m_prevWaypointLat, m_VesselLon, m_VesselLat);
     // std::cout << "signedDistance : " << signedDistance <<std::endl;
+    std_msgs::Float64 signedDistance_msg;
+    signedDistance_msg.data = signedDistance;
+    signedDistance_pub.publish(signedDistance_msg);
 
     // Calculate the angle of the line to be followed.  [1]:(phi)       [2]:(beta)
     double phi = calculateAngleOfDesiredTrajectory(m_nextWaypointLon, m_nextWaypointLat, m_prevWaypointLon,
@@ -136,6 +142,7 @@ int main(int argc, char **argv)
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
     
     desiredCourse_pub = nh.advertise<std_msgs::Int32>("desired_course", 1);
+    signedDistance_pub = nh.advertise<std_msgs::Float64>("signedDistance", 1);
 
     nhp.param<double>("lineFollowing/incidence_angle", incidenceAngle, 90);
     nhp.param<double>("lineFollowing/max_distance_from_line", maxDistanceFromLine, 20);
