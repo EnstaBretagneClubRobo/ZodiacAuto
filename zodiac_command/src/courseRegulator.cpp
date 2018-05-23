@@ -60,13 +60,13 @@ double estimatedBoatCourse()
         course_estim_speed1 =  course_estim_speed2;
     }
 
-    if (cos(mathUtility::degreeToRadian(boatHeading - gpsCourse)) < 0){
-        boatCourse = mathUtility::limitAngleRange(gpsCourse + 180);
-        gpsSpeed = -gpsSpeed;
-    }
-    else{
-        boatCourse = gpsCourse;
-    }
+//    if (cos(mathUtility::degreeToRadian(boatHeading - gpsCourse)) < 0){
+//        boatCourse = mathUtility::limitAngleRange(gpsCourse + 180);
+//        gpsSpeed = -gpsSpeed;
+//    }
+//    else{
+//        boatCourse = gpsCourse;
+//    }
 
     if(std::abs(gpsSpeed) < course_estim_speed1)
     {
@@ -74,7 +74,7 @@ double estimatedBoatCourse()
     }
     else if(std::abs(gpsSpeed) >= course_estim_speed2)
     {
-        return boatCourse;
+        return gpsCourse;
     }
     else // m_speed_1 <= m_VesselSpeed < m_speed_2
     {
@@ -191,6 +191,8 @@ int main(int argc, char **argv)
         if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) && 
             (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE))
         {
+cout << "estimatedBoatCourse: " << estimatedBoatCourse() << endl;
+cout << "error: " << (estimatedBoatCourse() - desiredCourse) << endl;
             switch(regulatorType) 
             {
             case 1 : // sinus regulator
