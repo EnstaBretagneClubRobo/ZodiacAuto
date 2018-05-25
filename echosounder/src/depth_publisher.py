@@ -11,8 +11,9 @@ ser = serial.Serial(port="/dev/sonar", baudrate=9600) #, parity=serial.PARITY_OD
 
 try:
     ser.open()
+    print "connected to sonar"
 except Exception, e:
-    ROS_WARN("Error open sonar serial port : " + str(e))
+#    ROS_WARN("Error open sonar serial port : " + str(e))
     exit()
 
 rate = rospy.Rate(5)
