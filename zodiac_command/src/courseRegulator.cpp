@@ -26,6 +26,7 @@ ros::Publisher helmCmd_pub;
 ros::Publisher gpsSpeed_pub;
 ros::Publisher gpsCourse_pub;
 ros::Publisher boatHeading_pub;
+ros::Publisher errorCourse_pub;
 std_msgs::Int32 helmCmd_msg;
 
 double gpsSpeed = DATA_OUT_OF_RANGE;    // m/s
@@ -125,14 +126,21 @@ double regulatorPID(const double courseError)
 void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
     geometry_msgs::Vector3 linearVelocity = msg->twist.linear;
-    gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2)); // TOCHECK
-    gpsCourse = mathUtility::limitAngleRange(mathUtility::radianToDegree(atan2(linearVelocity.x, linearVelocity.y))); //TOCHECK
-    // cout << "gpsSpeed" << gpsSpeed << endl; TO PUBLISH
-    // cout << "gpsCourse" << gpsSpeed << endl; TO PUBLISH
+
+    if (!isnan(linearVelocity.x) && !isnan(linearVelocity.y))
+    {
+        gpsSpeed = sqrt(pow(linearVelocity.x,2) + pow(linearVelocity.y, 2));
+        gpsCourse = mathUtility::limitAngleRange(mathUtility::radianToDegree(atan2(linearVelocity.x, linearVelocity.y)));
+    }
+    else{
+        gpsSpeed = 0;
+        gpsCourse = 0;
+    }
+
     std_msgs::Float64 gpsSpeed_msg;
     std_msgs::Float64 gpsCourse_msg;
-    if (!isnan(gpsSpeed)) gpsSpeed_msg.data = gpsSpeed;
-    if (!isnan(gpsCourse)) gpsCourse_msg.data = gpsCourse;
+    gpsSpeed_msg.data = gpsSpeed;
+    gpsCourse_msg.data = gpsCourse;
     gpsSpeed_pub.publish(gpsSpeed_msg);
     gpsCourse_pub.publish(gpsCourse_msg);
 }
@@ -144,9 +152,9 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
 
-    double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw)); //TOCHECK
-//	TO PUBLISH
+    double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw));
     boatHeading = mathUtility::limitAngleRange(imuHeading + magneticDeclination);
+    
     std_msgs::Float64 boatHeading_msg;
     boatHeading_msg.data = boatHeading;
     boatHeading_pub.publish(boatHeading_msg);
@@ -169,9 +177,10 @@ int main(int argc, char **argv)
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
     
     helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_angle_cmd", 1);
-    gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gpsSpeed", 1);
-    gpsCourse_pub = nh.advertise<std_msgs::Float64>("gpsCourse", 1);
-    boatHeading_pub = nh.advertise<std_msgs::Float64>("boatHeading", 1);
+    gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gps_speed", 1);
+    gpsCourse_pub = nh.advertise<std_msgs::Float64>("gps_course", 1);
+    boatHeading_pub = nh.advertise<std_msgs::Float64>("boat_heading", 1);
+    errorCourse_pub = nh.advertise<std_msgs::Float64>("error_course", 1);
 
     nhp.param<int>("courseRegulator/max_helm_angle", maxHelmAngle, 25);
     nhp.param<int>("courseRegulator/regulator_type", regulatorType, 1);
@@ -191,15 +200,19 @@ int main(int argc, char **argv)
         if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) && 
             (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE))
         {
-cout << "estimatedBoatCourse: " << estimatedBoatCourse() << endl;
-cout << "error: " << (estimatedBoatCourse() - desiredCourse) << endl;
+            double errorCourse = mathUtility::limitAngleRange180(estimatedBoatCourse() - desiredCourse);
+
+            std_msgs::Float64 errorCourse_msg;
+            errorCourse_msg.data = errorCourse;
+            errorCourse_pub.publish(errorCourse_msg);
+
             switch(regulatorType) 
             {
             case 1 : // sinus regulator
-                helmCmd_msg.data = (int) regulatorSinus(estimatedBoatCourse() - desiredCourse);
+                helmCmd_msg.data = (int) regulatorSinus(errorCourse);
                 break;
             case 2 : // PID regulator
-                helmCmd_msg.data = (int) regulatorPID(estimatedBoatCourse() - desiredCourse);
+                helmCmd_msg.data = (int) regulatorPID(errorCourse);
                 break;
             }        
             helmCmd_pub.publish(helmCmd_msg);
