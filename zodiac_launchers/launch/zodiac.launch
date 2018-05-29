@@ -14,7 +14,8 @@
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
 <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
 
-<!-- Sonar node TODO -->
+<!-- Sonar node -->
+<node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" respawn="true" />
 
 <!-- Pololu Jrk motorCtr node -->
 <node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true">
