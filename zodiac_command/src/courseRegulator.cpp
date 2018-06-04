@@ -11,7 +11,6 @@
 #include <iostream>
 #include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
-#include "std_msgs/Int32.h"
 #include "std_msgs/Float64.h"
 #include <zodiac_command/mathUtility.h>
 #include <tf/transform_datatypes.h>
@@ -27,17 +26,17 @@ ros::Publisher gpsSpeed_pub;
 ros::Publisher gpsCourse_pub;
 ros::Publisher boatHeading_pub;
 ros::Publisher errorCourse_pub;
-std_msgs::Int32 helmCmd_msg;
+std_msgs::Float64 helmCmd_msg;
 
 double gpsSpeed = DATA_OUT_OF_RANGE;    // m/s
 double gpsCourse = DATA_OUT_OF_RANGE;   // degrees
 double boatHeading = DATA_OUT_OF_RANGE; // degrees
-int desiredCourse = DATA_OUT_OF_RANGE;  // degrees
+double desiredCourse = DATA_OUT_OF_RANGE;  // degrees
 
 double I = 0; // integral sum for PIDregulator
 double oldCourseError = 0; // courseError at t-1 for PIDregulator
 
-int maxHelmAngle; // degrees
+double maxHelmAngle; // degrees
 int regulatorType; // 1: sinus, 2: PID
 double gainP;
 double gainI;
@@ -160,7 +159,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     boatHeading_pub.publish(boatHeading_msg);
 }
 
-void desiredCourse_callback(const std_msgs::Int32::ConstPtr& msg)
+void desiredCourse_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     desiredCourse = msg->data;
 }
@@ -176,13 +175,13 @@ int main(int argc, char **argv)
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
     
-    helmCmd_pub = nh.advertise<std_msgs::Int32>("helm_angle_cmd", 1);
+    helmCmd_pub = nh.advertise<std_msgs::Float64>("helm_angle_cmd", 1);
     gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gps_speed", 1);
     gpsCourse_pub = nh.advertise<std_msgs::Float64>("gps_course", 1);
     boatHeading_pub = nh.advertise<std_msgs::Float64>("boat_heading", 1);
     errorCourse_pub = nh.advertise<std_msgs::Float64>("error_course", 1);
 
-    nhp.param<int>("courseRegulator/max_helm_angle", maxHelmAngle, 25);
+    nhp.param<double>("courseRegulator/max_helm_angle", maxHelmAngle, 25);
     nhp.param<int>("courseRegulator/regulator_type", regulatorType, 1);
     nhp.param<double>("courseRegulator/PID/gain_P", gainP, 1);
     nhp.param<double>("courseRegulator/PID/gain_I", gainI, 0);
@@ -209,10 +208,10 @@ int main(int argc, char **argv)
             switch(regulatorType) 
             {
             case 1 : // sinus regulator
-                helmCmd_msg.data = (int) regulatorSinus(errorCourse);
+                helmCmd_msg.data = regulatorSinus(errorCourse);
                 break;
             case 2 : // PID regulator
-                helmCmd_msg.data = (int) regulatorPID(errorCourse);
+                helmCmd_msg.data = regulatorPID(errorCourse);
                 break;
             }        
             helmCmd_pub.publish(helmCmd_msg);
