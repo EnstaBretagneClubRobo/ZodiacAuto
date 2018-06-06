@@ -199,7 +199,8 @@ int main(int argc, char **argv)
         if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) && 
             (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE))
         {
-            double errorCourse = mathUtility::limitAngleRange180(estimatedBoatCourse() - desiredCourse);
+            //double errorCourse = mathUtility::limitAngleRange180(estimatedBoatCourse() - desiredCourse);
+            double errorCourse = mathUtility::limitAngleRange180(boatHeading - desiredCourse);
 
             std_msgs::Float64 errorCourse_msg;
             errorCourse_msg.data = errorCourse;
