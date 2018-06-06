@@ -17,7 +17,6 @@
 #include <zodiac_command/WaypointListMission.h>
 #include <zodiac_command/mathUtility.h>
 #include <sensor_msgs/NavSatFix.h>
-#include "std_msgs/Int32.h"
 #include "std_msgs/Float64.h"
 
 
@@ -27,7 +26,7 @@ using namespace std;
 
 ros::Publisher desiredCourse_pub;
 ros::Publisher signedDistance_pub;
-std_msgs::Int32 desiredCourse_msg;
+std_msgs::Float64 desiredCourse_msg;
 
 vector<zodiac_command::WaypointMission> waypointLine;
 double boatLatitude = DATA_OUT_OF_RANGE;
@@ -158,7 +157,7 @@ int main(int argc, char **argv)
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
     
-    desiredCourse_pub = nh.advertise<std_msgs::Int32>("desired_course", 1);
+    desiredCourse_pub = nh.advertise<std_msgs::Float64>("desired_course", 1);
     signedDistance_pub = nh.advertise<std_msgs::Float64>("signedDistance", 1);
 
     nhp.param<double>("lineFollowing/incidence_angle", incidenceAngle, 90);
@@ -181,7 +180,7 @@ int main(int argc, char **argv)
             double targetCourse = calculateTargetCourse(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
 
-            desiredCourse_msg.data = (int) targetCourse;
+            desiredCourse_msg.data = targetCourse;
             desiredCourse_pub.publish(desiredCourse_msg);
         }
         else
