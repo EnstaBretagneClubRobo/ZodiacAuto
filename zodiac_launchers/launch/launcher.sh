@@ -43,7 +43,7 @@ PIDs+=" $!"
 
 # RTK Corrections
 # The password must be entered as first argument of this script
-nohup . ~/str2str -in ntrip://ENSTABRE:$1 @78.24.131.136:2101/MAC30 -out serial://gps -n 1000 -p 48.418 -4.472 150.0 > ~/ros_ws/recorded_data/$now/str2str.out &
+nohup ~/str2str -in "ntrip://ENSTABRE:$1@78.24.131.136:2101/MAC30" -out serial://gps -n 1000 -p 48.418 -4.472 150.0 > ~/ros_ws/recorded_data/$now/str2str.out &
 PIDs+=" $!"
 sleep 1
 PIDS+=" `pidof record`"
