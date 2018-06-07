@@ -9,13 +9,13 @@ lineFollowing:
   gain_D : 0.
 
 courseRegulator:
-  loop_rate : 2.  # Hz
+  loop_rate : 10.  # Hz
   max_helm_angle : 7  # degrees
   regulator_type : 2   # 1: sinus, 2: PID
   PID :
     gain_P : 0.1
-    gain_I : 0
-    gain_D : 0.08
+    gain_I : 0# 0.002
+    gain_D : 0.2# 0.08
   course_estimation :
     speed_1: -0.1  # m/s   boatSpeed < speed_1 : boatCourse = boatHeading
     speed_2: -0.1  # m/s   boatSpeed > speed_2 : boatCourse = gpsCourse
