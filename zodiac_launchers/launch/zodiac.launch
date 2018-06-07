@@ -4,7 +4,7 @@
 
 <!-- GPS node -->
 <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen">
-<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true"> -->
+<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" > -->
   <param name="port" type="string" value="/dev/gps" />
   <param name="baud" type="int" value="9600" />
 </node>
