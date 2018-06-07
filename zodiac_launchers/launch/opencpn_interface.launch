@@ -10,7 +10,9 @@
     <param name="baud" value="4800" />
     <param name="protocols" value="$GPGGA,$GPHDT" />
   </node>
-  <node pkg="opencpn2ros" type="opencpn2ros" name="opencpn2ros"/>
-  <node pkg="opencpn2ros" type="fake_gps.py" name="fake_gps"/>
+  <node pkg="opencpn2ros" type="ros2opencpn.py" name="ros2opencpn">
+    <param name="rate" value="2" />
+  </node>
+  <node pkg="opencpn2ros" type="waypointListInterface" name="waypointListInterface" output="screen" />
 </group>
 </launch>
