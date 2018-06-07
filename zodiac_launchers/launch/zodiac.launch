@@ -3,22 +3,22 @@
 <group ns="zodiac_auto">
 
 <!-- GPS node -->
-<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen" respawn="true">
+<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen">
 <!-- <node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true"> -->
   <param name="port" type="string" value="/dev/gps" />
   <param name="baud" type="int" value="9600" />
 </node>
-<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true"/> -->
+<!-- <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen"/> -->
 
 <!-- IMU node -->
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
 <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
 
 <!-- Sonar node -->
-<node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" respawn="true" />
+<node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" />
 
 <!-- Pololu Jrk motorCtr node -->
-<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true">
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" >
   <param name="path" type="string" value="/dev/pololu" />
 </node>
 
@@ -39,6 +39,9 @@
 <node pkg="zodiac_command" type="courseRegulator" name="courseRegulator" output="screen">
   <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
 </node>
+
+<!-- rosbag node -->
+<!-- <node pkg="rosbag" type="record" name="rosbag_record" args="record -a" /> -->
 
 </group>
 

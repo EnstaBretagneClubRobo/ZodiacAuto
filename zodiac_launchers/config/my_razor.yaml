@@ -4,12 +4,12 @@ port: /dev/imu
 
 ##### Calibration ####
 ### accelerometer
-accel_x_min: -226.93
-accel_x_max: 259.64
-accel_y_min: -284.30
-accel_y_max: 266.85
-accel_z_min: -328.86
-accel_z_max: 272.80
+accel_x_min: -263.79
+accel_x_max: 258.18
+accel_y_min: -258.42
+accel_y_max: 267.21
+accel_z_min: -265.75
+accel_z_max: 284.67
 
 ### magnetometer
 # standard calibration
@@ -29,6 +29,6 @@ magn_ellipsoid_transform: [[0.999362, 0.000985273, 0.00338080], [0.000985273, 0.
 imu_yaw_calibration: 0.0
 
 ### gyroscope
-gyro_average_offset_x: 0.0
-gyro_average_offset_y: 0.0
-gyro_average_offset_z: 0.0
+gyro_average_offset_x: 0.01
+gyro_average_offset_y: 0.01
+gyro_average_offset_z: 0.02
