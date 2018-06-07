@@ -1,6 +1,3 @@
-[submodule "nmea_navsat_driver"]
-	path = nmea_navsat_driver
-	url = https://github.com/ros-drivers/nmea_navsat_driver.git
 [submodule "tritech_micron"]
 	path = tritech_micron
 	url = https://github.com/mcgill-robotics/ros-tritech-micron.git

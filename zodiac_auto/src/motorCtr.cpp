@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         // ROS_INFO("Jrk test");
         // jrkTest(fd);
 
-        ros::Rate loop_rate(1);
+        ros::Rate loop_rate(10);
         while (ros::ok())
         {
             double helm_fb = jrkGetScalingFeedback(fd);
