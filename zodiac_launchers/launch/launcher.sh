@@ -1,3 +1,6 @@
+# This file must be `source` before any launch.
+# The PIDs variable contains every PID of the process launched by this file.
+
 now=`date +"%F-%T"`
 
 # NTRIP password
@@ -29,21 +32,21 @@ if [ ! -d ~/ros_ws/recorded_data ]; then
     mkdir ~/ros_ws/recorded_data
 fi
 mkdir ~/ros_ws/recorded_data/$now
-nohup roscore > ~/ros_ws/recorded_data/$now/roscore.out &
-PIDs=$!
-sleep 1
-nohup rosbag record -a -o ~/ros_ws/recorded_data/$now/rosbag > ~/ros_ws/recorded_data/$now/rosbag.out &
-PIDs+=" $!"
+# nohup roscore > ~/ros_ws/recorded_data/$now/roscore.out &
+# PIDs=$!
+# sleep 1
+# nohup rosbag record -a -o ~/ros_ws/recorded_data/$now/rosbag > ~/ros_ws/recorded_data/$now/rosbag.out &
+# PIDs+=" $!"
 cp ~/ros_ws/src/ZodiacAuto/zodiac_launchers/config/*.yaml ~/ros_ws/recorded_data/$now/
 cp -r ~/.ros/log/latest ~/ros_ws/recorded_data/$now/
 
 # Roslaunch
 nohup roslaunch zodiac_launchers zodiac.launch > ~/ros_ws/recorded_data/$now/roslaunch.out &
-PIDs+=" $!"
+PIDs=$!
 
 # RTK Corrections
 # The password must be entered as first argument of this script
 nohup ~/str2str -in "ntrip://ENSTABRE:$1@78.24.131.136:2101/MAC30" -out serial://gps -n 1000 -p 48.418 -4.472 150.0 > ~/ros_ws/recorded_data/$now/str2str.out &
 PIDs+=" $!"
-sleep 1
-PIDS+=" `pidof record`"
+# sleep 1
+# PIDS+=" `pidof record`"
