@@ -143,7 +143,7 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     }
     else
     {
-        ROS_WARN("No gps fix");
+        ROS_WARN_THROTTLE(5, "No gps fix");
     }
 }
 
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
-    
+
     desiredCourse_pub = nh.advertise<std_msgs::Float64>("desired_course", 1);
     signedDistance_pub = nh.advertise<std_msgs::Float64>("signedDistance", 1);
 
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
         {
             ifBoatPassedOrEnteredWP_setPrevWPToBoatPos(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
-            
+
             double targetCourse = calculateTargetCourse(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
 
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
             desiredCourse_pub.publish(desiredCourse_msg);
         }
         else
-            ROS_WARN("lineFollowing : waiting for topic");
+            ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
 
         ros::spinOnce();
         loop_rate.sleep();

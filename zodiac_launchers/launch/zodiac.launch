@@ -42,7 +42,7 @@
 
 <!-- rosbag node -->
 <node pkg="rosbag" type="record" name="rosbag_record"
-       args="record -a -o $(env HOME)/ros_ws/recorded_data/$(env now)/rosbag_"/>
+       args="record -a -o $(env HOME)/ros_ws/recorded_data/$(env now)/rosbag"/>
 
 </group>
 

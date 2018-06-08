@@ -174,7 +174,7 @@ int main(int argc, char **argv)
     ros::Subscriber vel_sub = nh.subscribe("vel", 1, vel_callback);
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
-    
+
     helmCmd_pub = nh.advertise<std_msgs::Float64>("helm_angle_cmd", 1);
     gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gps_speed", 1);
     gpsCourse_pub = nh.advertise<std_msgs::Float64>("gps_course", 1);
@@ -206,7 +206,7 @@ int main(int argc, char **argv)
             errorCourse_msg.data = errorCourse;
             errorCourse_pub.publish(errorCourse_msg);
 
-            switch(regulatorType) 
+            switch(regulatorType)
             {
             case 1 : // sinus regulator
                 helmCmd_msg.data = regulatorSinus(errorCourse);
@@ -214,11 +214,11 @@ int main(int argc, char **argv)
             case 2 : // PID regulator
                 helmCmd_msg.data = regulatorPID(errorCourse);
                 break;
-            }        
+            }
             helmCmd_pub.publish(helmCmd_msg);
         }
         else
-            ROS_WARN("courseRegulator : waiting for topic");
+            ROS_WARN_THROTTLE(10, "courseRegulator : waiting for topic");
 
         ros::spinOnce();
         loop_rate.sleep();

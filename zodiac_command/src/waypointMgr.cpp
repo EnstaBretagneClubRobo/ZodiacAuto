@@ -97,7 +97,7 @@ void publishStatusWaypointMission()
 
 void newWaypointMission_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
 {
-    ROS_INFO("New waypoint mission recived");
+    ROS_INFO("New waypoint mission received");
     waypointMission = msg->waypoints;
     publishStatusWaypointMission();
 
@@ -122,7 +122,7 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     }
     else
     {
-        ROS_WARN("No gps fix");
+        ROS_WARN_THROTTLE(5, "No gps fix");
     }
 }
 
