@@ -152,7 +152,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     m.getRPY(roll, pitch, yaw);
 
     double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw));
-    boatHeading = mathUtility::limitAngleRange(imuHeading + magneticDeclination);
+    boatHeading = mathUtility::limitAngleRange(imuHeading - magneticDeclination);
     
     std_msgs::Float64 boatHeading_msg;
     boatHeading_msg.data = boatHeading;

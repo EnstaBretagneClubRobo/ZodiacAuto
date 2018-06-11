@@ -22,4 +22,4 @@ courseRegulator:
                   # speed_1 < boatSpeed < speed_2 : boatCourse = combinaison of both
 
 imu:
-  magnetic_declination : 1  # degrees
+  magnetic_declination : -1.5  # degrees
