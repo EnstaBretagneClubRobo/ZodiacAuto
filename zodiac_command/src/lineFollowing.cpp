@@ -130,7 +130,7 @@ void ifBoatPassedOrEnteredWP_setPrevWPToBoatPos(const double m_nextWaypointLon, 
 
 void waypointLine_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
 {
-    ROS_INFO("New waypoint line recived");
+    ROS_INFO("New waypoint line received");
     waypointLine = msg->waypoints;
 }
 
