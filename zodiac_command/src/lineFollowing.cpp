@@ -17,7 +17,6 @@
 #include <zodiac_command/WaypointListMission.h>
 #include <zodiac_command/mathUtility.h>
 #include <sensor_msgs/NavSatFix.h>
-#include "std_msgs/Int32.h"
 #include "std_msgs/Float64.h"
 
 
@@ -27,15 +26,21 @@ using namespace std;
 
 ros::Publisher desiredCourse_pub;
 ros::Publisher signedDistance_pub;
-std_msgs::Int32 desiredCourse_msg;
+std_msgs::Float64 desiredCourse_msg;
 
 vector<zodiac_command::WaypointMission> waypointLine;
 double boatLatitude = DATA_OUT_OF_RANGE;
 double boatLongitude = DATA_OUT_OF_RANGE;
 
+double I = 0;
+double oldSignedDistance = 0;
+
 double incidenceAngle;   // degrees     [1]: (gamma_infiniy).
 double maxDistanceFromLine; // meters   [1]: cutoff distance (r). 
 double waypointRadius; // meters
+double gainI;
+double gainD;
+double loopRate;    // Hz
 
 
 double calculateAngleOfDesiredTrajectory(const double m_nextWaypointLon, const double m_nextWaypointLat, 
@@ -72,7 +77,7 @@ double calculateAngleOfDesiredTrajectory(const double m_nextWaypointLon, const d
 double calculateTargetCourse(const double m_nextWaypointLon, const double m_nextWaypointLat, 
     const double m_prevWaypointLon, const double m_prevWaypointLat, const double m_VesselLon, const double m_VesselLat)
 {
-    // Calculate signed distance to the line.           [1] and [2]: (e).
+    // Calculate signed distance to the line.           [1] : (e).
     double signedDistance = mathUtility::calculateSignedDistanceToLine(m_nextWaypointLon, m_nextWaypointLat, m_prevWaypointLon,
         m_prevWaypointLat, m_VesselLon, m_VesselLat);
     // std::cout << "signedDistance : " << signedDistance <<std::endl;
@@ -80,13 +85,24 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
     signedDistance_msg.data = signedDistance;
     signedDistance_pub.publish(signedDistance_msg);
 
-    // Calculate the angle of the line to be followed.  [1]:(phi)       [2]:(beta)
+    // Calculate the angle of the line to be followed.  [1]:(phi)
     double phi = calculateAngleOfDesiredTrajectory(m_nextWaypointLon, m_nextWaypointLat, m_prevWaypointLon,
         m_prevWaypointLat, m_VesselLon, m_VesselLat);
     // std::cout << "phi : " << phi <<std::endl;
 
-    // Calculate the target course in nominal mode.     [1]:(theta_*)   [2]:(theta_r)
-    double targetCourse = phi + (2 * mathUtility::degreeToRadian(incidenceAngle)/M_PI) * atan(signedDistance/maxDistanceFromLine);
+    // Calculate the derivative and integral terms
+    double D = gainD*(signedDistance-oldSignedDistance)*loopRate;
+    I = I + gainI*signedDistance/loopRate;
+    oldSignedDistance = signedDistance;
+
+    // Anti wind up
+    if (abs(signedDistance) > maxDistanceFromLine)
+    {
+        I = 0;
+    }
+
+    // Calculate the target course in nominal mode.     [1]:(theta_*)
+    double targetCourse = phi + (2 * mathUtility::degreeToRadian(incidenceAngle)/M_PI) * atan((signedDistance+I+D)/maxDistanceFromLine);
     targetCourse = mathUtility::limitRadianAngleRange(targetCourse); // in north east down reference frame.
     // std::cout << "targetCourse: " << targetCourse <<std::endl;
 
@@ -127,7 +143,7 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     }
     else
     {
-        ROS_WARN("No gps fix");
+        ROS_WARN_THROTTLE(5, "No gps fix");
     }
 }
 
@@ -140,16 +156,17 @@ int main(int argc, char **argv)
 
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
-    
-    desiredCourse_pub = nh.advertise<std_msgs::Int32>("desired_course", 1);
+
+    desiredCourse_pub = nh.advertise<std_msgs::Float64>("desired_course", 1);
     signedDistance_pub = nh.advertise<std_msgs::Float64>("signedDistance", 1);
 
     nhp.param<double>("lineFollowing/incidence_angle", incidenceAngle, 90);
     nhp.param<double>("lineFollowing/max_distance_from_line", maxDistanceFromLine, 20);
     nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 5);
+    nhp.param<double>("lineFollowing/gain_I", gainI, 0);
+    nhp.param<double>("lineFollowing/gain_D", gainD, 0);
     // cout << "incidenceAngle=" << incidenceAngle << endl;
 
-    double loopRate;
     nhp.param<double>("lineFollowing/loop_rate", loopRate, 1);
     ros::Rate loop_rate(loopRate);
 
@@ -159,15 +176,15 @@ int main(int argc, char **argv)
         {
             ifBoatPassedOrEnteredWP_setPrevWPToBoatPos(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
-            
+
             double targetCourse = calculateTargetCourse(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
 
-            desiredCourse_msg.data = (int) targetCourse;
+            desiredCourse_msg.data = targetCourse;
             desiredCourse_pub.publish(desiredCourse_msg);
         }
         else
-            ROS_WARN("lineFollowing : waiting for topic");
+            ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
 
         ros::spinOnce();
         loop_rate.sleep();

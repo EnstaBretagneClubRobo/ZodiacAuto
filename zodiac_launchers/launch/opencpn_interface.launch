@@ -1,0 +1,18 @@
+<launch>
+<group ns="zodiac_auto">
+  <node pkg="opencpn2ros" type="nmea_topic_virtual_serial_reader" name="nmea_topic_virtual_serial_reader">
+    <param name="port" value="/dev/ttyVUSB1" />
+    <param name="baud" value="4800" />
+  </node>
+
+  <node pkg="opencpn2ros" type="nmea_topic_virtual_serial_writer" name="nmea_topic_virtual_serial_writer">
+    <param name="port" value="/dev/ttyVUSB2" />
+    <param name="baud" value="4800" />
+    <param name="protocols" value="$GPGGA,$GPHDT" />
+  </node>
+  <node pkg="opencpn2ros" type="ros2opencpn.py" name="ros2opencpn">
+    <param name="rate" value="2" />
+  </node>
+  <node pkg="opencpn2ros" type="waypointListInterface" name="waypointListInterface" output="screen" />
+</group>
+</launch>

@@ -10,7 +10,7 @@
 #include <string.h>
 #include <iostream>
 #include "jrk.h"
-#include "std_msgs/Int32.h"
+#include "std_msgs/Float64.h"
 #include "std_msgs/Bool.h"
 
 using namespace std;
@@ -20,24 +20,24 @@ int fd;
 ros::Publisher feedback_pub;
 ros::Publisher motorOn_pub;
 
-std_msgs::Int32 angle_fb_msg;
+std_msgs::Float64 angle_fb_msg;
 std_msgs::Bool motorOn_msg;
 
-int map_helmAnge_to_helmTarget(int helm_angle){
-    int target = (int) -0.003167*pow(helm_angle, 2) - 0.3416*pow(helm_angle, 2) + 83.99*helm_angle + 2234;
+double map_helmAnge_to_helmTarget(double helm_angle){
+    double target = -0.003167*pow(helm_angle, 2) - 0.3416*pow(helm_angle, 2) + 83.99*helm_angle + 2234;
     target = (target < 0) ? 0 : target;
     target = (4095 < target) ? 4095 : target;
     return target;
 }
 
-int map_helmFeedback_to_helmAngle(int helm_fb){
-    int helm_angle = (int) 1.224*pow(10, -10)*pow(helm_fb, 3) -3.112*pow(10, -7)*pow(helm_fb, 2) + 0.01146*helm_fb - 25;
+double map_helmFeedback_to_helmAngle(double helm_fb){
+    double helm_angle = 1.224*pow(10, -10)*pow(helm_fb, 3) -3.112*pow(10, -7)*pow(helm_fb, 2) + 0.01146*helm_fb - 25;
     return helm_angle;
 }
 
-void cmd_callback(const std_msgs::Int32::ConstPtr& msg)
+void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
 {
-    int target = map_helmAnge_to_helmTarget(msg->data);
+    int target = (int) map_helmAnge_to_helmTarget(msg->data);
     jrkSetTarget(fd, target);
     //cout << "target=" << target << endl;
 }
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber cmd_sub = nh.subscribe("helm_angle_cmd", 1000, cmd_callback);
 
-    feedback_pub = nh.advertise<std_msgs::Int32>("helm_angle_fb", 1000);
+    feedback_pub = nh.advertise<std_msgs::Float64>("helm_angle_fb", 1000);
     motorOn_pub = nh.advertise<std_msgs::Bool>("helm_motorOn", 1000);
 
     string path;
@@ -63,10 +63,10 @@ int main(int argc, char **argv)
         // ROS_INFO("Jrk test");
         // jrkTest(fd);
 
-        ros::Rate loop_rate(1);
+        ros::Rate loop_rate(10);
         while (ros::ok())
         {
-            int helm_fb = jrkGetScalingFeedback(fd);
+            double helm_fb = jrkGetScalingFeedback(fd);
             angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
             feedback_pub.publish(angle_fb_msg);
 
