@@ -13,6 +13,9 @@
   <node pkg="opencpn2ros" type="fake_compass.py" name="fake_compass">
     <param name="rate" value="2" />
   </node>
+  <node pkg="opencpn2ros" type="fake_sounder.py" name="fake_sounder">
+    <param name="rate" value="2" />
+  </node>
   
   <node pkg="opencpn2ros" type="waypointListInterface" name="waypointListInterface" output="screen" />
 
