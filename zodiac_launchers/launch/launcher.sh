@@ -19,11 +19,11 @@ export ROS_IP=$(hostname -I)
 test `echo $ROS_IP | wc -w` = 1
 if [ ! $? -eq 0 ] ; then
 	echo "IP address cannot be determined, there are several possibilities."
-	echo "1) ${ROS_IP%\ *}\n2) ${ROS_IP#*\ }"
+	echo -e "1) ${ROS_IP%\ *\ *}\n2) ${ROS_IP#*\ }"
 	echo "Enter 1 or 2 to choose the good one, or enter a valid IP address."
 	read IP_nb
 	if [ $IP_nb = 1 ] ; then
-		export ROS_IP=${ROS_IP%\ *}
+		export ROS_IP=${ROS_IP%\ *\ *}
 	elif [ $IP_nb = 2 ] ; then
 		export ROS_IP=${ROS_IP#*\ }
 	else
@@ -33,7 +33,7 @@ fi
 echo "Your IP address is : "$ROS_IP
 export ROS_MASTER_URI=http://$ROS_IP:11311
 
-cd ${0%*launcher.sh}/../../../..
+# cd ${0%*launcher.sh}/../../../..
 . ./devel/setup.${SHELL##*/}
 
 # Rosbag
@@ -56,7 +56,7 @@ fi
 
 sleep 1
 # Roslaunch
-# roslaunch zodiac_launchers zodiac.launch &
+roslaunch zodiac_launchers zodiac.launch &
 PIDs+=" $!"
 
 # Return to initial config
@@ -65,3 +65,5 @@ unset pwd_path
 unset use_rtk
 unset save_path
 unset IP_nb
+
+fg
