@@ -15,7 +15,10 @@
 
 using namespace std;
 
+string path;
 int fd;
+double helm_fb;
+int error_flags;
 
 ros::Publisher feedback_pub;
 ros::Publisher motorOn_pub;
@@ -38,7 +41,11 @@ double map_helmFeedback_to_helmAngle(double helm_fb){
 void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     int target = (int) map_helmAnge_to_helmTarget(msg->data);
-    jrkSetTarget(fd, target);
+    if (jrkSetTarget(fd, target) == -1);
+    {
+        fd = jrkConnect(path.c_str());
+        ROS_INFO("Jrk reconnected");
+    }
     //cout << "target=" << target << endl;
 }
 
@@ -53,24 +60,29 @@ int main(int argc, char **argv)
     feedback_pub = nh.advertise<std_msgs::Float64>("helm_angle_fb", 1000);
     motorOn_pub = nh.advertise<std_msgs::Bool>("helm_motorOn", 1000);
 
-    string path;
     nhp.param<string>("path", path, "/dev/ttyACM0");
 
     if ((fd = jrkConnect(path.c_str()) ) != -1)
     {
         ROS_INFO("Jrk connected");
 
-        // ROS_INFO("Jrk test");
-        // jrkTest(fd);
-
         ros::Rate loop_rate(10);
         while (ros::ok())
         {
-            double helm_fb = jrkGetScalingFeedback(fd);
+            if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
+            {
+                fd = jrkConnect(path.c_str());
+                ROS_INFO("Jrk reconnected");
+            }
             angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
             feedback_pub.publish(angle_fb_msg);
 
-            bool motorOn = !(0x2 & jrkGetErrorFlagsHalting(fd));
+            if ( (error_flags = jrkGetErrorFlagsHalting(fd)) == -1)
+            {
+                fd = jrkConnect(path.c_str());
+                ROS_INFO("Jrk reconnected");
+            }
+            bool motorOn = !(0x2 & error_flags);
             motorOn_msg.data = motorOn;
             motorOn_pub.publish(motorOn_msg);
 
