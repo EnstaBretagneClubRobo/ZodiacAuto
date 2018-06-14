@@ -22,7 +22,7 @@ void pos_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
         state_pub.publish(pose_msg);
     }
     else
-        ROS_WARN("No gps fix");
+        ROS_WARN_THROTTLE(5, "No gps fix");
 }
 
 int main(int argc, char **argv)

@@ -20,6 +20,7 @@ ros::Publisher statusWaypointMission_pub;
 vector<zodiac_command::WaypointMission> waypointMission;
 double boatLatitude;    // degrees
 double boatLongitude;   // degrees
+bool missionRunning = 0;
 
 double waypointRadius;  // meters
 
@@ -97,14 +98,11 @@ void publishStatusWaypointMission()
 
 void newWaypointMission_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
 {
-    ROS_INFO("New waypoint mission recived");
+    ROS_INFO("New waypoint mission received");
+    missionRunning = 1;    
     waypointMission = msg->waypoints;
     publishStatusWaypointMission();
 
-    // zodiac_command::WaypointMission WP0 = waypointMission[0];
-    // cout << "lat=" << WP0.latitude << endl;
-    // cout << "lon=" << WP0.longitude << endl;
-    // cout << "lat=" << WP0.waypointReached << endl;
 }
 
 void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
@@ -113,16 +111,18 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     {
         boatLatitude = fix_msg->latitude;
         boatLongitude = fix_msg->longitude;
-
-        if (isNextWaypointReached())
+        if(missionRunning)
         {
-            publishStatusWaypointMission();
+            if (isNextWaypointReached())
+            {
+                publishStatusWaypointMission();
+            }
+            publishWaypointLine();
         }
-        publishWaypointLine();
     }
     else
     {
-        ROS_WARN("No gps fix");
+        ROS_WARN_THROTTLE(5, "No gps fix");
     }
 }
 
