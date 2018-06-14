@@ -2,10 +2,10 @@ waypointMgr:
   waypoint_radius : 20 # meters
 
 lineFollowing:
-  loop_rate : 2.  # Hz
+  loop_rate : 1.  # Hz
   incidence_angle : 90 # degrees
-  max_distance_from_line : 60. # meters at the distance targetAngle = incidence_angle/2
-  gain_I : 0.
+  max_distance_from_line : 30. # meters at the distance targetAngle = incidence_angle/2
+  gain_I : 0.0001
   gain_D : 0.
 
 courseRegulator:
