@@ -31,23 +31,39 @@ bool isNextWaypointReached()
     {
         if (waypointMission.at(i).waypointReached == 0)
         {
-            //Calculate distance to waypoint
-            double DistanceToWaypoint = mathUtility::calculateDTW(boatLongitude, boatLatitude, waypointMission.at(i).longitude, waypointMission.at(i).latitude);
-            // cout << "DistanceToWaypoint: " << DistanceToWaypoint << endl;
-            // cout << "Waypoint Radius: " << waypointRadius << endl;
-            if(DistanceToWaypoint > waypointRadius)
-            {
-                return false;
+            if(i==0){
+                //Calculate distance to waypoint
+                double DistanceToWaypoint = mathUtility::calculateDTW(boatLongitude, boatLatitude, waypointMission.at(i).longitude, waypointMission.at(i).latitude);
+
+                if(DistanceToWaypoint > waypointRadius)
+                {
+                    return false;
+                }
+                else
+                {
+                    ROS_INFO("First waypoint reached");
+                    waypointMission.at(i).waypointReached = 1;
+                    return true;
+                }
             }
-            else
-            {
-                ROS_INFO("Waypoint reached");
-                waypointMission.at(i).waypointReached = 1;
-                return true;
+            else{
+                // Calculate distance after the next waypoint (distance to the orthogonal to the line) 
+                double distanceAfterWaypoint = mathUtility::calculateWaypointsOrthogonalLine(waypointMission.at(i).longitude, waypointMission.at(i).latitude,
+                waypointMission.at(i-1).longitude, waypointMission.at(i-1).latitude, boatLongitude, boatLatitude);
+
+                if(distanceAfterWaypoint > 0)
+                {
+                    ROS_INFO("Waypoint reached");
+                    waypointMission.at(i).waypointReached = 1;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }
-
 
     return true;
 }
