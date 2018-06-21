@@ -111,13 +111,13 @@ double mathUtility::calculateSignedDistanceToLine(const double nextLon, const do
     int earthRadius = 6371000;
 
     std::array<double, 3> prevWPCoord = //a
-     {  earthRadius * cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
-        earthRadius * cos(degreeToRadian(prevLat)) * sin(degreeToRadian(prevLon)),
-        earthRadius * sin(degreeToRadian(prevLat))};
+     {  cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
+        cos(degreeToRadian(prevLat)) * sin(degreeToRadian(prevLon)),
+        sin(degreeToRadian(prevLat))};
     std::array<double, 3> nextWPCoord = //b
-     {  earthRadius * cos(degreeToRadian(nextLat)) * cos(degreeToRadian(nextLon)),
-        earthRadius * cos(degreeToRadian(nextLat)) * sin(degreeToRadian(nextLon)),
-        earthRadius * sin(degreeToRadian(nextLat))};
+     {  cos(degreeToRadian(nextLat)) * cos(degreeToRadian(nextLon)),
+        cos(degreeToRadian(nextLat)) * sin(degreeToRadian(nextLon)),
+        sin(degreeToRadian(nextLat))};
         std::array<double, 3> boatCoord = //m
      {  earthRadius * cos(degreeToRadian(gpsLat)) * cos(degreeToRadian(gpsLon)),
         earthRadius * cos(degreeToRadian(gpsLat)) * sin(degreeToRadian(gpsLon)),
