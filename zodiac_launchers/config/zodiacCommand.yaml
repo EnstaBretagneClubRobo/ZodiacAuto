@@ -1,5 +1,5 @@
 waypointMgr:
-  waypoint_radius : 20 # meters
+  waypoint_radius : 100 # meters (used only for the first waypoint)
 
 lineFollowing:
   loop_rate : 1.  # Hz
@@ -14,8 +14,8 @@ courseRegulator:
   regulator_type : 2   # 1: sinus, 2: PID
   PID :
     gain_P : 0.1
-    gain_I : 0# 0.002
-    gain_D : 0.2# 0.08
+    gain_I : 0
+    gain_D : 0.2
   course_estimation :
     speed_1: -0.1  # m/s   boatSpeed < speed_1 : boatCourse = boatHeading
     speed_2: -0.1  # m/s   boatSpeed > speed_2 : boatCourse = gpsCourse

@@ -76,16 +76,17 @@ void publishWaypointLine()
     waypointLine_msg.header.frame_id = "waypoint_line";
     waypointLine_msg.child_frame_id = "map";
 
+    zodiac_command::WaypointMission boatPose;
+    boatPose.waypointID = 0;
+    boatPose.latitude  = boatLatitude;
+    boatPose.longitude = boatLongitude;
+    boatPose.waypointReached = 1;
+
     for (int i=0; i<waypointMission.size(); i++)
     {
         if (waypointMission.at(i).waypointReached == 0)
         {
             if(i==0){
-                zodiac_command::WaypointMission boatPose;
-                boatPose.waypointID = 0;
-                boatPose.latitude  = boatLatitude;
-                boatPose.longitude = boatLongitude;
-                boatPose.waypointReached = 1;
                 waypointLine_msg.waypoints.push_back(boatPose);
             }
             else{
@@ -94,6 +95,12 @@ void publishWaypointLine()
             waypointLine_msg.waypoints.push_back(waypointMission.at(i));
             break;
         }
+    }
+    // If the mission is finished, turn around the last waypoint (new line between the boat position and the last waypoint)
+    if (waypointMission.back().waypointReached == 1)
+    {
+        waypointLine_msg.waypoints.push_back(boatPose);
+        waypointLine_msg.waypoints.push_back(waypointMission.back());
     }
 
     waypointLine_pub.publish(waypointLine_msg);
