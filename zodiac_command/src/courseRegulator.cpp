@@ -105,7 +105,7 @@ double regulatorSinus(const double courseError)
 double regulatorPID(const double courseError)
 {
     double P = gainP*courseError;
-    double D = gainD*(courseError-oldCourseError)*loopRate;
+    double D = gainD*sin(mathUtility::degreeToRadian(courseError-oldCourseError))*loopRate;
     double helmCmd = P+I+D;
 
     I = I + gainI*courseError/loopRate;
