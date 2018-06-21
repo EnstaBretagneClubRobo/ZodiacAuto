@@ -1,10 +1,10 @@
 waypointMgr:
-  waypoint_radius : 20 # meters
+  waypoint_radius : 100 # meters (used only for the first waypoint)
 
 lineFollowing:
-  loop_rate : 2.  # Hz
-  incidence_angle : 90 # degrees
-  max_distance_from_line : 60. # meters at the distance targetAngle = incidence_angle/2
+  loop_rate : 1.  # Hz
+  incidence_angle : 45 # degrees
+  max_distance_from_line : 30. # meters at the distance targetAngle = incidence_angle/2
   gain_I : 0.
   gain_D : 0.
 
@@ -14,12 +14,8 @@ courseRegulator:
   regulator_type : 2   # 1: sinus, 2: PID
   PID :
     gain_P : 0.1
-    gain_I : 0# 0.002
-    gain_D : 0.2# 0.08
-  course_estimation :
-    speed_1: -0.1  # m/s   boatSpeed < speed_1 : boatCourse = boatHeading
-    speed_2: -0.1  # m/s   boatSpeed > speed_2 : boatCourse = gpsCourse
-                  # speed_1 < boatSpeed < speed_2 : boatCourse = combinaison of both
+    gain_I : 0
+    gain_D : 0.2
 
 imu:
   magnetic_declination : -1.5  # degrees
