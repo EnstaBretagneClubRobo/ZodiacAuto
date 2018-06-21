@@ -42,46 +42,7 @@ double gainP;
 double gainI;
 double gainD;
 double magneticDeclination; // degrees
-double course_estim_speed1; // m/s
-double course_estim_speed2; // m/s
 double loopRate; // Hz
-
-// Returns an estimation of the vessel course (angle of the velocity vector).
-// boatSpeed < speed_1 : boatCourse = boatHeading
-// boatSpeed > speed_2 : boatCourse = gpsCourse
-// speed_1 < boatSpeed < speed_2 : boatCourse = combinaison of boatHeading and gpsCourse
-// out : estimatedBoatCourse in degrees.
-double estimatedBoatCourse()
-{
-    double boatCourse;
-
-    if (course_estim_speed1 > course_estim_speed2) // Error. Need to be m_speed_1 <= m_speed_2.
-    {
-        course_estim_speed1 =  course_estim_speed2;
-    }
-
-//    if (cos(mathUtility::degreeToRadian(boatHeading - gpsCourse)) < 0){
-//        boatCourse = mathUtility::limitAngleRange(gpsCourse + 180);
-//        gpsSpeed = -gpsSpeed;
-//    }
-//    else{
-//        boatCourse = gpsCourse;
-//    }
-
-    if(std::abs(gpsSpeed) < course_estim_speed1)
-    {
-        return boatHeading;
-    }
-    else if(std::abs(gpsSpeed) >= course_estim_speed2)
-    {
-        return gpsCourse;
-    }
-    else // m_speed_1 <= m_VesselSpeed < m_speed_2
-    {
-        return mathUtility::linearFunctionBetweenAngle(gpsSpeed, course_estim_speed1, 
-            course_estim_speed2, boatHeading, boatCourse);
-    }
-}
 
 
 // in : courseError = boatCourse - desiredCourse in degrees
@@ -187,8 +148,6 @@ int main(int argc, char **argv)
     nhp.param<double>("courseRegulator/PID/gain_I", gainI, 0);
     nhp.param<double>("courseRegulator/PID/gain_D", gainD, 0);
 
-    nhp.param<double>("courseRegulator/course_estimation/speed_1", course_estim_speed1, 0.5);
-    nhp.param<double>("courseRegulator/course_estimation/speed_2", course_estim_speed2, 1);
     nhp.param<double>("imu/magnetic_declination", magneticDeclination, 0);
 
     nhp.param<double>("courseRegulator/loop_rate", loopRate, 1);
@@ -199,7 +158,6 @@ int main(int argc, char **argv)
         if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) && 
             (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE))
         {
-            //double errorCourse = mathUtility::limitAngleRange180(estimatedBoatCourse() - desiredCourse);
             double errorCourse = mathUtility::limitAngleRange180(boatHeading - desiredCourse);
 
             std_msgs::Float64 errorCourse_msg;
