@@ -43,8 +43,10 @@ void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
     int target = (int) map_helmAnge_to_helmTarget(msg->data);
     if (jrkSetTarget(fd, target) == -1);
     {
-        fd = jrkConnect(path.c_str());
-        ROS_INFO("Jrk reconnected");
+        ROS_WARN("jrkSetTarget failed");
+        // close(fd);
+        // ROS_WARN("Jrk disconnected");
+        // fd = jrkConnect(path.c_str());
     }
     //cout << "target=" << target << endl;
 }
@@ -62,35 +64,38 @@ int main(int argc, char **argv)
 
     nhp.param<string>("path", path, "/dev/ttyACM0");
 
-    if ((fd = jrkConnect(path.c_str()) ) != -1)
+    while(ros::ok())
     {
-        ROS_INFO("Jrk connected");
-
-        ros::Rate loop_rate(10);
-        while (ros::ok())
+        if ((fd = jrkConnect(path.c_str()) ) != -1)
         {
-            if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
-            {
-                fd = jrkConnect(path.c_str());
-                ROS_INFO("Jrk reconnected");
-            }
-            angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
-            feedback_pub.publish(angle_fb_msg);
+            ROS_INFO("Jrk connected");
 
-            if ( (error_flags = jrkGetErrorFlagsHalting(fd)) == -1)
+            ros::Rate loop_rate(10);
+            while (ros::ok())
             {
-                fd = jrkConnect(path.c_str());
-                ROS_INFO("Jrk reconnected");
-            }
-            bool motorOn = !(0x2 & error_flags);
-            motorOn_msg.data = motorOn;
-            motorOn_pub.publish(motorOn_msg);
+                if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
+                {
+                    break;
+                }
+                angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
+                feedback_pub.publish(angle_fb_msg);
 
-            ros::spinOnce();
-            loop_rate.sleep();
+                if ( (error_flags = jrkGetErrorFlagsHalting(fd)) == -1)
+                {
+                    break;
+                }
+                bool motorOn = !(0x2 & error_flags);
+                motorOn_msg.data = motorOn;
+                motorOn_pub.publish(motorOn_msg);
+
+                ros::spinOnce();
+                loop_rate.sleep();
+            }
+
+            close(fd);
+            ROS_WARN("Jrk disconnected");
         }
-
-        close(fd);
+        ros::Duration(0.5).sleep();
     }
 
     return 0;
