@@ -66,7 +66,28 @@ double regulatorSinus(const double courseError)
 double regulatorPID(const double courseError)
 {
     double P = gainP*courseError;
-    double D = gainD*sin(mathUtility::degreeToRadian(courseError-oldCourseError))*loopRate;
+    double D = gainD*(courseError-oldCourseError)*loopRate;
+    double helmCmd = P+I+D;
+
+    I = I + gainI*courseError/loopRate;
+    oldCourseError = courseError;
+
+    // Anti wind up and max command
+    if (abs(helmCmd) > maxHelmAngle)
+    {
+        helmCmd = mathUtility::sgn(helmCmd)*maxHelmAngle;
+        I = 0;
+    }
+
+    return helmCmd;
+}
+
+// courseError = boatCourse - desiredCourse in degrees
+// out : helmCmd in degrees
+double regulatorPIDsin(const double courseError)
+{
+    double P = gainP*courseError;
+    double D = gainD*mathUtility::radianToDegree(sin(mathUtility::degreeToRadian(courseError-oldCourseError)))*loopRate;
     double helmCmd = P+I+D;
 
     I = I + gainI*courseError/loopRate;
@@ -171,6 +192,9 @@ int main(int argc, char **argv)
                 break;
             case 2 : // PID regulator
                 helmCmd_msg.data = regulatorPID(errorCourse);
+                break;
+            case 3 : // PIDsin regulator
+                helmCmd_msg.data = regulatorPIDsin(errorCourse);
                 break;
             }
             helmCmd_pub.publish(helmCmd_msg);
