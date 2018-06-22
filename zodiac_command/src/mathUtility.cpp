@@ -77,8 +77,8 @@ double mathUtility::limitRadianAngleRange(double angle)
 */
 double mathUtility::linearFunctionBetweenAngle(double x, double x1, double x2, double angle1, double angle2)
 {
-    float a = (limitAngleRange180(angle2 - angle1))/(x2 - x1); // Warning : error if x2==x1
-    float b = angle2 - a*x2;
+    double a = (limitAngleRange180(angle2 - angle1))/(x2 - x1); // Warning : error if x2==x1
+    double b = angle2 - a*x2;
     return limitAngleRange(a*x + b);
 }
 
@@ -108,7 +108,7 @@ double mathUtility::calculateDTW(double gpsLon, double gpsLat, double waypointLo
 double mathUtility::calculateSignedDistanceToLine(const double nextLon, const double nextLat, const double prevLon, const double prevLat,
 					const double gpsLon, const double gpsLat)
 {
-    int earthRadius = 6371000;
+    const double earthRadius = 6371000;
 
     std::array<double, 3> prevWPCoord = //a
      {  cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
@@ -144,7 +144,7 @@ double mathUtility::calculateWaypointsOrthogonalLine(const double nextLon, const
 {    /* Check to see if boat has passed the orthogonal to the line
      * otherwise the boat will continue to follow old line if it passed the waypoint without entering the radius
      */
-    int earthRadius = 6371000;
+    const double earthRadius = 6371000;
 
     std::array<double, 3> prevWPCoord = //a
      {  earthRadius * cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
