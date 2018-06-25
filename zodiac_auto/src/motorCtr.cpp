@@ -48,7 +48,6 @@ void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
         // ROS_WARN("Jrk disconnected");
         // fd = jrkConnect(path.c_str());
     }
-    //cout << "target=" << target << endl;
 }
 
 int main(int argc, char **argv)
@@ -96,7 +95,7 @@ int main(int argc, char **argv)
 
             close(fd);
         }
-        ros::Duration(0.5).sleep();
+        ros::Duration(0.1).sleep();
     }
 
     return 0;

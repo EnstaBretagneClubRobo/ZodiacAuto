@@ -18,7 +18,7 @@ int jrkConnect(const char * device)
     int fd = open(device, O_RDWR | O_NOCTTY);
     if (fd == -1)
     {
-        perror(device);
+        // perror(device);
         return -1;
     }
 
@@ -41,13 +41,13 @@ int jrkGetVariable(int fd, unsigned char command)
 {
     if(write(fd, &command, 1) == -1)
     {
-        perror("error writing");
+        // perror("error writing");
         return -1;
     }
     unsigned char response[2];
     if(read(fd,response,2) != 2)
     {
-        perror("error reading");
+        // perror("error reading");
         return -1;
     }
     return response[0] + 256*response[1];
@@ -84,7 +84,7 @@ int jrkSetTarget(int fd, unsigned short target)
     unsigned char command[] = {0xC0 + (target & 0x1F), (target >> 5) & 0x7F};
     if (write(fd, command, sizeof(command)) == -1)
     {
-        perror("error writing");
+        // perror("error writing");
         return -1;
     }
     return 0;
