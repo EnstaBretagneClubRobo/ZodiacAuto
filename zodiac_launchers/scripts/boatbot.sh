@@ -23,13 +23,17 @@ if [ ! $? -eq 0 ] ; then
 fi
 echo "Your IP address is : "$ROS_IP
 
-cd
-cd ros_ws/src/ZodiacAuto/OpenCPN2ROS/script
-sudo ./create_ports.bash
 
-cd $pwd_path
+# Detection of whether the virtual ports are already opened
+test `ls -l /dev | grep ttyVUSB | wc -l` = 0
+if [ $? -eq 0 ] ; then
+	cd
+	cd ros_ws/src/ZodiacAuto/OpenCPN2ROS/script
+	sudo ./create_ports.bash
+fi
 
 # Roslaunch
+cd
 source ros_ws/devel/setup.bash
 roslaunch zodiac_launchers opencpn_interface.launch &
 
