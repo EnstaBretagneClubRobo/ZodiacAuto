@@ -2,7 +2,7 @@ waypointMgr:
   waypoint_radius : 100 # meters (used only for the first waypoint)
 
 lineFollowing:
-  loop_rate : 1.  # Hz
+  loop_rate : 10.  # Hz
   incidence_angle : 45 # degrees
   max_distance_from_line : 10. # meters at the distance targetAngle = incidence_angle/2
   gain_I : 0.
