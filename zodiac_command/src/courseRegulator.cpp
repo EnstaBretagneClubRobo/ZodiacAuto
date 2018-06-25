@@ -202,8 +202,8 @@ int main(int argc, char **argv)
         else
             ROS_WARN_THROTTLE(10, "courseRegulator : waiting for topic");
 
-        ros::spinOnce();
         loop_rate.sleep();
+        ros::spinOnce();
     }
 
     return 0;

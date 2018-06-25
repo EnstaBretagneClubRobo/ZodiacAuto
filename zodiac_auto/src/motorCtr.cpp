@@ -74,8 +74,8 @@ int main(int argc, char **argv)
             motorOn_msg.data = motorOn;
             motorOn_pub.publish(motorOn_msg);
 
-            ros::spinOnce();
             loop_rate.sleep();
+			ros::spinOnce();
         }
 
         close(fd);
