@@ -101,6 +101,7 @@ void publishWaypointLine()
     {
         waypointLine_msg.waypoints.push_back(boatPose);
         waypointLine_msg.waypoints.push_back(waypointMission.back());
+		cout << '\a' << endl; // *BEEP*
     }
 
     waypointLine_pub.publish(waypointLine_msg);
@@ -139,6 +140,7 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
             if (isNextWaypointReached())
             {
                 publishStatusWaypointMission();
+				cout << '\a' << endl; // *BEEP*
             }
             publishWaypointLine();
         }
@@ -164,7 +166,6 @@ int main(int argc, char **argv)
     statusWaypointMission_pub = nh.advertise<zodiac_command::WaypointListMission>("status_waypoint_mission", 1000, true);
 
     nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 5);
-
     ros::spin();
 
 
