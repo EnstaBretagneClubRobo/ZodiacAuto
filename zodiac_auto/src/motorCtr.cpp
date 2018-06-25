@@ -41,7 +41,7 @@ double map_helmFeedback_to_helmAngle(double helm_fb){
 void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     int target = (int) map_helmAnge_to_helmTarget(msg->data);
-    if (jrkSetTarget(fd, target) == -1);
+    if (jrkSetTarget(fd, target) == -1)
     {
         ROS_WARN("jrkSetTarget failed");
         // close(fd);
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    ros::Subscriber cmd_sub = nh.subscribe("helm_angle_cmd", 1000, cmd_callback);
+    ros::Subscriber cmd_sub = nh.subscribe("helm_angle_cmd", 1, cmd_callback);
 
     feedback_pub = nh.advertise<std_msgs::Float64>("helm_angle_fb", 1000);
     motorOn_pub = nh.advertise<std_msgs::Bool>("helm_motorOn", 1000);
@@ -75,6 +75,7 @@ int main(int argc, char **argv)
             {
                 if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
                 {
+           ROS_WARN("Jrk disconnected helm_fb");
                     break;
                 }
                 angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
@@ -82,6 +83,7 @@ int main(int argc, char **argv)
 
                 if ( (error_flags = jrkGetErrorFlagsHalting(fd)) == -1)
                 {
+           ROS_WARN("Jrk disconnected error_flags");
                     break;
                 }
                 bool motorOn = !(0x2 & error_flags);
@@ -93,7 +95,6 @@ int main(int argc, char **argv)
             }
 
             close(fd);
-            ROS_WARN("Jrk disconnected");
         }
         ros::Duration(0.5).sleep();
     }

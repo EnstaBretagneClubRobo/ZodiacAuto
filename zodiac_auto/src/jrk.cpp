@@ -19,7 +19,7 @@ int jrkConnect(const char * device)
     if (fd == -1)
     {
         perror(device);
-        return 1;
+        return -1;
     }
 
     #ifndef _WIN32
