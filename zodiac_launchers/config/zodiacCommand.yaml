@@ -16,6 +16,7 @@ courseRegulator:
     gain_P : 0.1
     gain_I : 0
     gain_D : 0.2
+  offset_motor_angle : 5. # degrees
 
 imu:
   magnetic_declination : -1.5  # degrees
