@@ -115,7 +115,6 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
 
 void waypointLine_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
 {
-    ROS_INFO("New waypoint line received");
     waypointLine = msg->waypoints;
 }
 
@@ -165,7 +164,7 @@ int main(int argc, char **argv)
             desiredCourse_pub.publish(desiredCourse_msg);
         }
         else
-            ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
+            // ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
 
         loop_rate.sleep();
         ros::spinOnce();

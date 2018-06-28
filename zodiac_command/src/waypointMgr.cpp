@@ -165,7 +165,9 @@ int main(int argc, char **argv)
     waypointLine_pub = nh.advertise<zodiac_command::WaypointListMission>("waypoint_line", 1);
     statusWaypointMission_pub = nh.advertise<zodiac_command::WaypointListMission>("status_waypoint_mission", 1000, true);
 
-    nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 5);
+    nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 100);
+    ROS_INFO("Waiting for waypoint mission");
+
     ros::spin();
 
 
