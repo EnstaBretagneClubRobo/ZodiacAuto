@@ -41,6 +41,7 @@ int regulatorType; // 1: sinus, 2: PID
 double gainP;
 double gainI;
 double gainD;
+double offsetMotorAngle;
 double magneticDeclination; // degrees
 double loopRate; // Hz
 
@@ -135,7 +136,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
 
     double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw));
     boatHeading = mathUtility::limitAngleRange(imuHeading - magneticDeclination);
-    
+
     std_msgs::Float64 boatHeading_msg;
     boatHeading_msg.data = boatHeading;
     boatHeading_pub.publish(boatHeading_msg);
