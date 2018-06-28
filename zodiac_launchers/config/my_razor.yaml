@@ -4,12 +4,12 @@ port: /dev/imu
 
 ##### Calibration ####
 ### accelerometer
-accel_x_min: -263.79
-accel_x_max: 258.18
-accel_y_min: -258.42
-accel_y_max: 267.21
-accel_z_min: -265.75
-accel_z_max: 284.67
+accel_x_min: -226.93
+accel_x_max: 259.64
+accel_y_min: -284.30
+accel_y_max: 266.85
+accel_z_min: -328.86
+accel_z_max: 272.80
 
 ### magnetometer
 # standard calibration
@@ -22,13 +22,13 @@ magn_z_max: 600.0
 
 # extended calibration
 calibration_magn_use_extended: true
-magn_ellipsoid_center: [123.956, -53.6098, 109.004]
-magn_ellipsoid_transform: [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+magn_ellipsoid_center: [58.2923, 420.027, -239.854]
+magn_ellipsoid_transform: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 
 # AHRS to robot calibration
-imu_yaw_calibration: 0.0
+imu_yaw_calibration: -90.0
 
 ### gyroscope
-gyro_average_offset_x: 0.01
-gyro_average_offset_y: 0.01
-gyro_average_offset_z: 0.02
+gyro_average_offset_x: 0.0
+gyro_average_offset_y: 0.0
+gyro_average_offset_z: 0.0
