@@ -4,18 +4,18 @@
 
 <!-- GPS node -->
 <!-- <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen"> -->
-<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" >
+<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true" respawn_delay="2" >
   <param name="port" type="string" value="/dev/gps" />
   <param name="baud" type="int" value="9600" />
 </node>
-<node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen"/>
+<node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true" respawn_delay="2" />
 
 <!-- IMU node -->
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
 <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
 
 <!-- Pololu Jrk motorCtr node -->
-<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" >
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true" respawn_delay="2" >
   <param name="path" type="string" value="/dev/pololu" />
 </node>
 

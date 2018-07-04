@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     nhp.param<double>("courseRegulator/PID/gain_P", gainP, 1);
     nhp.param<double>("courseRegulator/PID/gain_I", gainI, 0);
     nhp.param<double>("courseRegulator/PID/gain_D", gainD, 0);
-    nhp.param<double>("courseResulator/offset_motor_angle", offsetMotorAngle, 0);
+    nhp.param<double>("courseRegulator/offset_motor_angle", offsetMotorAngle, 0);
 
     nhp.param<double>("imu/magnetic_declination", magneticDeclination, 0);
 
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
             switch(regulatorType)
             {
             case 1 : // sinus regulator
-                helmCmd_msg.data = regulatorSinus(errorCourse) +  + offsetMotorAngle;
+                helmCmd_msg.data = regulatorSinus(errorCourse) + offsetMotorAngle;
                 break;
             case 2 : // PID regulator
                 helmCmd_msg.data = regulatorPID(errorCourse) + offsetMotorAngle;

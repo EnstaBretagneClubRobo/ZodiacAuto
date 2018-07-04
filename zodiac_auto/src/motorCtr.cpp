@@ -72,11 +72,13 @@ int main(int argc, char **argv)
             ros::Rate loop_rate(10);
             while (ros::ok())
             {
-                if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
+ros::Duration(0.02).sleep();
+/*                if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
                 {
            ROS_WARN("Jrk disconnected helm_fb");
                     break;
-                }
+                }*/
+ros::Duration(0.020).sleep();
                 angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
                 feedback_pub.publish(angle_fb_msg);
 
@@ -85,17 +87,19 @@ int main(int argc, char **argv)
            ROS_WARN("Jrk disconnected error_flags");
                     break;
                 }
-                bool motorOn = !(0x2 & error_flags);
+ros::Duration(0.020).sleep();    
+            bool motorOn = !(0x2 & error_flags);
                 motorOn_msg.data = motorOn;
                 motorOn_pub.publish(motorOn_msg);
 
                 ros::spinOnce();
+ros::Duration(0.010).sleep();
                 loop_rate.sleep();
             }
 
             close(fd);
         }
-        ros::Duration(0.1).sleep();
+        ros::Duration(1.5).sleep();
     }
 
     return 0;
