@@ -3,7 +3,7 @@ waypointMgr:
 
 lineFollowing:
   loop_rate : 10.  # Hz
-  incidence_angle : 80 # degrees
+  incidence_angle : 70 # degrees
   max_distance_from_line : 15. # meters at the distance targetAngle = incidence_angle/2
   gain_I : 0.
   gain_D : 0.
