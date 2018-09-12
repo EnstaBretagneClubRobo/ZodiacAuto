@@ -13,7 +13,7 @@ courseRegulator:
   max_helm_angle : 15  # degrees
   regulator_type : 3   # 1: sinus, 2: PID, 3: PIDsin (sinus on the derivative term)
   PID :
-    gain_P : 0.5
+    gain_P : 0.35
     gain_I : 0
     gain_D : 0.0 #0.2
   offset_motor_angle : 0. # degrees

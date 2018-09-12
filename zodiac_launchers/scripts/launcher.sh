@@ -42,6 +42,19 @@ export ROS_IP=10.42.0.1
 echo "Your IP address is : "$ROS_IP
 export ROS_MASTER_URI=http://$ROS_IP:11311
 
+# Detection of whether the virtual ports are already opened
+test `ls -l /dev | grep ttyVUSB | wc -l` = 0
+if [ $? -eq 0 ] ; then
+    echo "Opening ports ttyVUSB0, 1, 2, 3"
+    sudo socat -d -d PTY,raw,echo=0,link=/dev/ttyVUSB0,mode=666 PTY,raw,echo=0,link=/dev/ttyVUSB1,mode=666 &
+    sudo socat -d -d PTY,raw,echo=0,link=/dev/ttyVUSB2,mode=666 PTY,raw,echo=0,link=/dev/ttyVUSB3,mode=666 &
+    sleep 2
+    sudo socat -d -d PTY,raw,echo=0,link=/dev/ttyVUSB1,mode=666 tcp-listen:5001,reuseaddr,fork &
+    sudo socat -d -d PTY,raw,echo=0,link=/dev/ttyVUSB2,mode=666 tcp-listen:5011,reuseaddr,fork &
+    sleep 2
+    echo "Port ready"
+fi
+
 # cd ${0%*launcher.sh}/../../../..
 cd ~/ros_ws
 . ./devel/setup.${SHELL##*/}

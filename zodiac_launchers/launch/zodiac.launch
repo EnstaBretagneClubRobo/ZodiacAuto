@@ -42,7 +42,10 @@
 
 <!-- rosbag node -->
 <node pkg="rosbag" type="record" name="rosbag_record"
-       args="record -o $(env HOME)/ros_ws/recorded_data/$(optenv now .)/rosbag /zodiac_auto/boat_heading /zodiac_auto/depth /zodiac_auto/desired_course /zodiac_auto/fix /zodiac_auto/gps_course /zodiac_auto/gps_speed /zodiac_auto/helm_angle_cmd /zodiac_auto/helm_motorOn /zodiac_auto/imu /zodiac_auto/waypoint_line /zodiac_auto/signedDistance /zodiac_auto/time_reference /zodiac_auto/vel"/>
+       args="record --split --size=1000 -o $(env HOME)/ros_ws/recorded_data/$(optenv now .)/rosbag /zodiac_auto/boat_heading /zodiac_auto/depth /zodiac_auto/desired_course /zodiac_auto/fix /zodiac_auto/gps_course /zodiac_auto/gps_speed /zodiac_auto/helm_angle_cmd /zodiac_auto/helm_motorOn /zodiac_auto/imu /zodiac_auto/waypoint_line /zodiac_auto/signedDistance /zodiac_auto/time_reference /zodiac_auto/vel"/>
+
+<!-- opencpn_interface node -->
+<include file="/home/zodiac/ros_ws/src/ZodiacAuto/OpenCPN2ROS/launchers/opencpn_interface.launch" />
 
 </group>
 
