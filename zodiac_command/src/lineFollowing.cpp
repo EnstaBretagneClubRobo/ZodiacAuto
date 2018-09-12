@@ -17,12 +17,14 @@
 #include <zodiac_command/WaypointListMission.h>
 #include <zodiac_command/mathUtility.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <geometry_msgs/Vector3.h>
 #include "std_msgs/Float64.h"
 
 
 using namespace std;
 
 #define DATA_OUT_OF_RANGE -2000
+#define INF 999999
 
 ros::Publisher desiredCourse_pub;
 ros::Publisher signedDistance_pub;
@@ -31,9 +33,11 @@ std_msgs::Float64 desiredCourse_msg;
 vector<zodiac_command::WaypointMission> waypointLine;
 double boatLatitude = DATA_OUT_OF_RANGE;
 double boatLongitude = DATA_OUT_OF_RANGE;
+double currents[3] = {};
 
 double I = 0;
 double oldSignedDistance = 0;
+double a = 0;
 
 double incidenceAngle;   // degrees     [1]: (gamma_infiniy).
 double maxDistanceFromLine; // meters   [1]: cutoff distance (r). 
@@ -101,8 +105,25 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
         I = 0;
     }
 
+    // Correction with the currents
+    if (currents[0] == 0) {a=0;} //boat speed is 0
+    else
+    {
+        double psi = M_PI/2 - phi;
+        double p1 = currents[0];
+        double p2 = cos(psi)*currents[1]-sin(psi)*currents[2];
+        double p3 = sin(psi)*currents[1]+cos(psi)*currents[2];
+        double d = -p3/p1;
+        if (d>1) {a=INF;} // The speed of the boat is not enough to compensate the current
+        else if (d<-1) {a=-INF;}
+        else
+        {
+            a = tan(asin(d));
+        }
+    }
+
     // Calculate the target course in nominal mode.     [1]:(theta_*)
-    double targetCourse = phi + (2 * mathUtility::degreeToRadian(incidenceAngle)/M_PI) * atan((signedDistance+I+D)/maxDistanceFromLine);
+    double targetCourse = phi + (2 * mathUtility::degreeToRadian(incidenceAngle)/M_PI) * atan((signedDistance+I+D-a)/maxDistanceFromLine);
     targetCourse = mathUtility::limitRadianAngleRange(targetCourse); // in north east down reference frame.
     // std::cout << "targetCourse: " << targetCourse <<std::endl;
 
@@ -131,6 +152,12 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     }
 }
 
+void currents_callback(const geometry_msgs::Vector3::ConstPtr& cur_msg)
+{
+    currents[0] = cur_msg->x;
+    currents[1] = cur_msg->y;
+    currents[2] = cur_msg->z;
+}
 
 int main(int argc, char **argv)
 {
@@ -140,6 +167,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
+    ros::Subscriber currents_sub = nh.subscribe("currents", 1, currents_callback);
 
     desiredCourse_pub = nh.advertise<std_msgs::Float64>("desired_course", 1);
     signedDistance_pub = nh.advertise<std_msgs::Float64>("signedDistance", 1);
