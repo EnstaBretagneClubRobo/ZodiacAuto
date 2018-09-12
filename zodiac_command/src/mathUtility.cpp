@@ -77,8 +77,8 @@ double mathUtility::limitRadianAngleRange(double angle)
 */
 double mathUtility::linearFunctionBetweenAngle(double x, double x1, double x2, double angle1, double angle2)
 {
-    float a = (limitAngleRange180(angle2 - angle1))/(x2 - x1); // Warning : error if x2==x1
-    float b = angle2 - a*x2;
+    double a = (limitAngleRange180(angle2 - angle1))/(x2 - x1); // Warning : error if x2==x1
+    double b = angle2 - a*x2;
     return limitAngleRange(a*x + b);
 }
 
@@ -108,16 +108,16 @@ double mathUtility::calculateDTW(double gpsLon, double gpsLat, double waypointLo
 double mathUtility::calculateSignedDistanceToLine(const double nextLon, const double nextLat, const double prevLon, const double prevLat,
 					const double gpsLon, const double gpsLat)
 {
-    int earthRadius = 6371000;
+    const double earthRadius = 6371000;
 
     std::array<double, 3> prevWPCoord = //a
-     {  earthRadius * cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
-        earthRadius * cos(degreeToRadian(prevLat)) * sin(degreeToRadian(prevLon)),
-        earthRadius * sin(degreeToRadian(prevLat))};
+     {  cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),
+        cos(degreeToRadian(prevLat)) * sin(degreeToRadian(prevLon)),
+        sin(degreeToRadian(prevLat))};
     std::array<double, 3> nextWPCoord = //b
-     {  earthRadius * cos(degreeToRadian(nextLat)) * cos(degreeToRadian(nextLon)),
-        earthRadius * cos(degreeToRadian(nextLat)) * sin(degreeToRadian(nextLon)),
-        earthRadius * sin(degreeToRadian(nextLat))};
+     {  cos(degreeToRadian(nextLat)) * cos(degreeToRadian(nextLon)),
+        cos(degreeToRadian(nextLat)) * sin(degreeToRadian(nextLon)),
+        sin(degreeToRadian(nextLat))};
         std::array<double, 3> boatCoord = //m
      {  earthRadius * cos(degreeToRadian(gpsLat)) * cos(degreeToRadian(gpsLon)),
         earthRadius * cos(degreeToRadian(gpsLat)) * sin(degreeToRadian(gpsLon)),
@@ -144,7 +144,7 @@ double mathUtility::calculateWaypointsOrthogonalLine(const double nextLon, const
 {    /* Check to see if boat has passed the orthogonal to the line
      * otherwise the boat will continue to follow old line if it passed the waypoint without entering the radius
      */
-    int earthRadius = 6371000;
+    const double earthRadius = 6371000;
 
     std::array<double, 3> prevWPCoord = //a
      {  earthRadius * cos(degreeToRadian(prevLat)) * cos(degreeToRadian(prevLon)),

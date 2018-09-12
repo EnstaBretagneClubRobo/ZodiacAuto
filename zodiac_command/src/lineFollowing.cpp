@@ -112,25 +112,9 @@ double calculateTargetCourse(const double m_nextWaypointLon, const double m_next
 
 }
 
-void ifBoatPassedOrEnteredWP_setPrevWPToBoatPos(const double m_nextWaypointLon, const double m_nextWaypointLat, 
-    const double m_prevWaypointLon, const double m_prevWaypointLat, const double m_VesselLon, const double m_VesselLat)
-{
-    double distanceAfterWaypoint = mathUtility::calculateWaypointsOrthogonalLine(m_nextWaypointLon, m_nextWaypointLat, m_prevWaypointLon,
-            m_prevWaypointLat, m_VesselLon, m_VesselLat);
-
-    double DTW = mathUtility::calculateDTW(m_VesselLon, m_VesselLat, m_nextWaypointLon, m_nextWaypointLat);
-
-    if(distanceAfterWaypoint > 0 ||  DTW < waypointRadius)
-    {
-        waypointLine.at(0).longitude = boatLongitude;
-        waypointLine.at(0).latitude = boatLatitude;
-    }
-}
-
 
 void waypointLine_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
 {
-    ROS_INFO("New waypoint line received");
     waypointLine = msg->waypoints;
 }
 
@@ -165,7 +149,6 @@ int main(int argc, char **argv)
     nhp.param<double>("waypointMgr/waypoint_radius", waypointRadius, 5);
     nhp.param<double>("lineFollowing/gain_I", gainI, 0);
     nhp.param<double>("lineFollowing/gain_D", gainD, 0);
-    // cout << "incidenceAngle=" << incidenceAngle << endl;
 
     nhp.param<double>("lineFollowing/loop_rate", loopRate, 1);
     ros::Rate loop_rate(loopRate);
@@ -174,9 +157,6 @@ int main(int argc, char **argv)
     {
         if((boatLatitude != DATA_OUT_OF_RANGE) && (boatLongitude != DATA_OUT_OF_RANGE) && (waypointLine.size()>0))
         {
-            ifBoatPassedOrEnteredWP_setPrevWPToBoatPos(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
-            waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
-
             double targetCourse = calculateTargetCourse(waypointLine.at(1).longitude, waypointLine.at(1).latitude, 
             waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude);
 
@@ -184,10 +164,10 @@ int main(int argc, char **argv)
             desiredCourse_pub.publish(desiredCourse_msg);
         }
         else
-            ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
+            // ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
 
-        ros::spinOnce();
         loop_rate.sleep();
+        ros::spinOnce();
     }
 
     return 0;

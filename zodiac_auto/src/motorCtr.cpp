@@ -15,7 +15,10 @@
 
 using namespace std;
 
+string path;
 int fd;
+double helm_fb;
+int error_flags;
 
 ros::Publisher feedback_pub;
 ros::Publisher motorOn_pub;
@@ -38,8 +41,13 @@ double map_helmFeedback_to_helmAngle(double helm_fb){
 void cmd_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     int target = (int) map_helmAnge_to_helmTarget(msg->data);
-    jrkSetTarget(fd, target);
-    //cout << "target=" << target << endl;
+    if (jrkSetTarget(fd, target) == -1)
+    {
+        ROS_WARN("jrkSetTarget failed");
+        // close(fd);
+        // ROS_WARN("Jrk disconnected");
+        // fd = jrkConnect(path.c_str());
+    }
 }
 
 int main(int argc, char **argv)
@@ -48,37 +56,50 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    ros::Subscriber cmd_sub = nh.subscribe("helm_angle_cmd", 1000, cmd_callback);
+    ros::Subscriber cmd_sub = nh.subscribe("helm_angle_cmd", 1, cmd_callback);
 
     feedback_pub = nh.advertise<std_msgs::Float64>("helm_angle_fb", 1000);
     motorOn_pub = nh.advertise<std_msgs::Bool>("helm_motorOn", 1000);
 
-    string path;
     nhp.param<string>("path", path, "/dev/ttyACM0");
 
-    if ((fd = jrkConnect(path.c_str()) ) != -1)
+    while(ros::ok())
     {
-        ROS_INFO("Jrk connected");
-
-        // ROS_INFO("Jrk test");
-        // jrkTest(fd);
-
-        ros::Rate loop_rate(10);
-        while (ros::ok())
+        if ((fd = jrkConnect(path.c_str()) ) != -1)
         {
-            double helm_fb = jrkGetScalingFeedback(fd);
-            angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
-            feedback_pub.publish(angle_fb_msg);
+            ROS_INFO("Jrk connected");
 
-            bool motorOn = !(0x2 & jrkGetErrorFlagsHalting(fd));
-            motorOn_msg.data = motorOn;
-            motorOn_pub.publish(motorOn_msg);
+            ros::Rate loop_rate(10);
+            while (ros::ok())
+            {
+ros::Duration(0.02).sleep();
+/*                if ( (helm_fb = jrkGetScalingFeedback(fd)) == -1)
+                {
+           ROS_WARN("Jrk disconnected helm_fb");
+                    break;
+                }*/
+ros::Duration(0.020).sleep();
+                angle_fb_msg.data = map_helmFeedback_to_helmAngle(helm_fb);
+                feedback_pub.publish(angle_fb_msg);
 
-            ros::spinOnce();
-            loop_rate.sleep();
+                if ( (error_flags = jrkGetErrorFlagsHalting(fd)) == -1)
+                {
+           ROS_WARN("Jrk disconnected error_flags");
+                    break;
+                }
+ros::Duration(0.020).sleep();    
+            bool motorOn = !(0x2 & error_flags);
+                motorOn_msg.data = motorOn;
+                motorOn_pub.publish(motorOn_msg);
+
+                ros::spinOnce();
+ros::Duration(0.010).sleep();
+                loop_rate.sleep();
+            }
+
+            close(fd);
         }
-
-        close(fd);
+        ros::Duration(1.5).sleep();
     }
 
     return 0;

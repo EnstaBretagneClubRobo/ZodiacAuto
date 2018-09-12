@@ -1,0 +1,13 @@
+<launch>
+
+<group ns="zodiac_auto">
+
+<!-- Pololu Jrk motorCtr node -->
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true">
+<param name="path" type="string" value="/dev/pololu" />
+</node>
+
+
+</group>
+
+</launch>
