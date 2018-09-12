@@ -201,7 +201,7 @@ int main(int argc, char **argv)
             }
             helmCmd_pub.publish(helmCmd_msg);
         }
-        else
+        // else
             // ROS_WARN_THROTTLE(10, "courseRegulator : waiting for topic");
 
         loop_rate.sleep();
