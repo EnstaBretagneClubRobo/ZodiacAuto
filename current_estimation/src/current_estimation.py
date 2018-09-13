@@ -6,10 +6,10 @@ from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3, TwistStamped
 
 
-phat = np.array([[1], [0], [0]])
-gamma = 1000*np.eye(3)
-gamma_a = 0.000001
-gamma_b = 1.0
+phat = np.array([[0], [0], [0]])
+gamma = 100000*np.eye(3)
+gamma_a = 0.1
+gamma_b = 0.5
 
 state = Vector3()
 
@@ -34,8 +34,8 @@ def kalman(x0, gamma_0, u, y, gamma_a, gamma_b, A, C):
 
 def vel_cb(msg):
 	global state, phat, gamma
-	state.x = msg.twist.linear.x
-	state.y = msg.twist.linear.y
+	state.x = msg.twist.linear.y
+	state.y = msg.twist.linear.x
 	C = np.array([[np.cos(state.z), 1, 0], [np.sin(state.z), 0, 1]])
 	y = np.array([[state.x], [state.y]])
 	phat, gamma = kalman(phat, gamma, 0, y, gamma_a*np.eye(3), gamma_b*np.eye(2), np.eye(3), C)
@@ -44,7 +44,7 @@ def vel_cb(msg):
 	currents_pub.publish(currents)
 def heading_cb(msg):
 	global state
-	state.z = msg.data
+	state.z = msg.data*np.pi/180.
 
 rospy.init_node("current_estimation")
 
