@@ -6,9 +6,10 @@ from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3, TwistStamped
 
 
+phat = np.array([[1], [0], [0]])
 gamma = 1000*np.eye(3)
-gamma_a = 0.00001
-gamma_b = 0.2
+gamma_a = 0.000001
+gamma_b = 1.0
 
 state = Vector3()
 
@@ -32,7 +33,7 @@ def kalman(x0, gamma_0, u, y, gamma_a, gamma_b, A, C):
 
 
 def vel_cb(msg):
-	global state
+	global state, phat, gamma
 	state.x = msg.twist.linear.x
 	state.y = msg.twist.linear.y
 	C = np.array([[np.cos(state.z), 1, 0], [np.sin(state.z), 0, 1]])
@@ -40,6 +41,7 @@ def vel_cb(msg):
 	phat, gamma = kalman(phat, gamma, 0, y, gamma_a*np.eye(3), gamma_b*np.eye(2), np.eye(3), C)
 	currents = Vector3()
 	currents.x, currents.y, currents.z = phat.flatten()
+	currents_pub.publish(currents)
 def heading_cb(msg):
 	global state
 	state.z = msg.data
@@ -49,6 +51,6 @@ rospy.init_node("current_estimation")
 vel_gps_sub = rospy.Subscriber('/zodiac_auto/vel', TwistStamped, vel_cb)
 boat_heading_sub = rospy.Subscriber('/zodiac_auto/boat_heading', Float64, heading_cb)
 
-currents_pub = rospy.Publisher('currents', Vector3, queue_size=10)
+currents_pub = rospy.Publisher('/zodiac_auto/currents', Vector3, queue_size=10)
 
 rospy.spin()
