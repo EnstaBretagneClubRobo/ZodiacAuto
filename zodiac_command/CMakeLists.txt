@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
-  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,11 +48,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  WaypointMission.msg
-  WaypointListMission.msg
-)
+# add_message_files(
+#   FILES
+#   WaypointMission.msg
+#   WaypointListMission.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,12 +69,12 @@ add_message_files(
 # )
 
 # Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-  sensor_msgs
-  std_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   geometry_msgs
+#   sensor_msgs
+#   std_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -137,9 +136,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(waypointMgr src/waypointMgr.cpp src/mathUtility.cpp)
-add_executable(lineFollowing src/lineFollowing.cpp src/mathUtility.cpp)
-add_executable(courseRegulator src/courseRegulator.cpp src/mathUtility.cpp)
+add_executable(control src/control.cpp src/mathUtility.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,18 +146,10 @@ add_executable(courseRegulator src/courseRegulator.cpp src/mathUtility.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(waypointMgr ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(lineFollowing ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(courseRegulator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(waypointMgr
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(lineFollowing
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(courseRegulator
+target_link_libraries(control
   ${catkin_LIBRARIES}
 )
 
