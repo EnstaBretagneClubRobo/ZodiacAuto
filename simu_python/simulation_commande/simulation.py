@@ -42,18 +42,19 @@ def draw_boat_and_magneto(X):
     ordo_m = [ym]
 
     #Affichage
-    plt.plot(absc_r, ordo_r, 'r' , linewidth = 3.0)
+    plt.plot(absc_r, ordo_r, 'r' , linewidth = 1.0)
     plt.plot(absc_w, ordo_w, 'b' , linewidth = 1.0)
-    plt.plot(absc_m, ordo_m, 'bo', markersize = 10)
+    plt.plot(absc_m, ordo_m, 'bo', markersize = 1)
     return 0
 
 def f(X,u):
+    # fonction d'évolution de la remorque et du zodiac
     x, y, delta, v, xm, ym, theta, vm = X
     #epsilon = 0.1 # marge d'erreur pour le cable
 
     dx = v*np.cos(theta+delta)
     dy = v*np.sin(theta+delta)
-    dv = 1
+    dv = 0
     ddelta = u
      
     if error(X) >= 0 : # garde la remorque à la bonne distance du zodiac
@@ -63,7 +64,7 @@ def f(X,u):
     
     if error(X) < 0 : # diminue la vitesse de la remorque si le cable n'est pas tendu
 
-        dxm, dym, dtheta, dvm = vm*np.cos(theta), vm*np.sin(theta),0, 0.5*vm
+        dxm, dym, dtheta, dvm = vm*np.cos(theta), vm*np.sin(theta),0, 0.3*vm
 
     return np.array([dx,
         dy,
@@ -82,40 +83,63 @@ def error(X):
 
 
 def control(X,w, dw):
+    #linearization feedback
     x, y, delta, v, xm, ym, theta, vm = X
     y = X[2] + X[6]
-    v = w - y + dw
-    return np.array([v])
+    u = w - y + dw - v*sin(delta)
+    return u
 
 def control_curve(X):
     x, y, delta, v, xm, ym, theta, vm = X
-    y = delta+ np.arctan(y)
-    u = y = sin(delta)/(1+y*y)
+    cap_zodiac = delta + theta # cap réel du zodiac entre les abscisses et le zodiac
+    
+    u = -sawtooth(cap_zodiac-np.arctan2(-(x*x/100-1)*y-x, y)) + (((x*x/100-1)*y+x)*np.sin(cap_zodiac)+y*(x*y*np.cos(cap_zodiac)/50+(x*x/100-1)*np.sin(cap_zodiac)+np.cos(cap_zodiac)))/(y*y+((x*x/100-1)*y+x)*((x*x/100-1)*y+x))
+    
     return u
+
+def traj_sin(X):
+    x, y, delta, v, xm, ym, theta, vm = X
+    bruit = np.random.rand(1)
+    cap_zodiac = delta+ theta # + bruit[0]/10 # cap mesuré avec du bruit
+    a = 1
+    b = np.cos(x/10) + np.sin(x/10) - y/10
+    da = 0
+    db = np.cos(cap_zodiac)*(np.cos(x/10)-np.sin(x/10))/10 - np.sin(cap_zodiac)/10
+    u = -sawtooth(cap_zodiac-np.arctan2(0.5*b,0.5*a)-(0.25*b*da-0.25*a*db)/(0.25*a*a+0.25*b*b))
+
+    return u
+
+
+
+def champ_vect(p):
+    x,y = p # van der pol vector field attractor
+    return np.array([y, -(0.01*x*x-1)*y-x])
+
 def main(): 
 
-    X = np.array([0,2,2,1, 0, 0, 0, 0 ])
+    X = np.array([0,2,0,1, 0, 0, 0, 0 ])
     fig = plt.figure()
     
-    dt = 0.01
+    dt = 1
     
-    #ax = init_figure(-40,40,-40,40)
-    
+    k = np.linspace(0, 300, 100)
+    plt.plot(k, 10*np.sin(k/10))    
 
-    for t in np.arange(0,10,dt):
-        #ax.cla()
-        w = np.pi/2
-        dw = 0  
+    for t in np.arange(0,1000,dt):
+        w = traj_sin(X)
+        dw = 0
         
-        u=control(X,w, dw) 
-        #u = control_curve(X)
+        u=control(X,w, dw) # controle avec Fb linearization
+        #u = control_curve(X) # van der pols raté
+        #u = control_sin(X) 
         Xdot=f(X,u)
         X  = X + dt*Xdot
         if error(X) > 0 :
             X[4:6] = X[0] - boot*np.cos(X[6]), X[1] - boot*np.sin(X[6])
         
         draw_boat_and_magneto(X)
-        #print(error(X))
+        
+        x, y, delta, v, xm, ym, theta, vm = X
         
         plt.pause(dt)  
 
