@@ -1,0 +1,1 @@
+~/str2str -in "tcpcli://10.42.0.1:21200" -out serial://ttyACM0 > $save_path/str2strgpsboatbot.out &
