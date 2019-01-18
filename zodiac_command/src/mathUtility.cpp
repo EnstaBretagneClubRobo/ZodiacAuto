@@ -51,7 +51,7 @@ double mathUtility::limitAngleRange180(double angle)
 
 	return angle;
 
-	// NOTE - Maël: An other possibility to set the angle in ]-180, 180[) is to use a sawtooth function.	
+	// NOTE - Maël: An other possibility to set the angle in ]-180, 180[) is to use a sawtooth function.
 }
 
 double mathUtility::limitRadianAngleRange(double angle)
@@ -97,11 +97,11 @@ double mathUtility::calculateDTW(double gpsLon, double gpsLat, double waypointLo
 			+ cos(boatLatitudeInRadian)
 			* cos(waypointLatitudeInRadian)
 			* sin(deltaLongitudeRadians/2)
-			* sin(deltaLongitudeRadians/2); 			
+			* sin(deltaLongitudeRadians/2);
 
 	double b = 2 * atan2(sqrt(a), sqrt(1 - a));
 	double distanceToWaypoint = radiusOfEarth * b * 1000;
-	
+
 	return distanceToWaypoint;
 }
 
@@ -189,4 +189,13 @@ double mathUtility::calculateWaypointsOrthogonalLine(const double nextLon, const
     orthogonalLine = boatCoord[0]*obc[0]/normOBC + boatCoord[1]*obc[1]/normOBC + boatCoord[2]*obc[2]/normOBC;
 
     return orthogonalLine;
+}
+
+double mathUtility::sawtooth(double x)
+{
+	double result;
+
+	result = fmod( (x + M_PI) , (2 * M_PI) ) - M_PI;
+
+	  return result;
 }
