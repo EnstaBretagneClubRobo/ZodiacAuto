@@ -13,6 +13,7 @@ class mathUtility {
 
     	static double degreeToRadian(double degrees);
 	    static double radianToDegree(double radians);
+      static double sawtooth(double x);
 		static double limitAngleRange(double angle);
 		static double limitAngleRange180(double angle);
         static double limitRadianAngleRange(double angle);
@@ -23,6 +24,7 @@ class mathUtility {
 					const double gpsLon, const double gpsLat);
 	    static double calculateWaypointsOrthogonalLine(const double nextLon, const double nextLat, const double prevLon, const double prevLat,
 					const double gpsLon, const double gpsLat);
+
 };
 
 #endif

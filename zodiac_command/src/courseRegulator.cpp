@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
-* ROS node "courseRegulator" subscribes to "vel", "imu" and "desired_course" topics. 
+* ROS node "courseRegulator" subscribes to "vel", "imu" and "desired_course" topics.
 * It publishes "helm_cmd" topic.
-*
+* It also suscribes to "waypointLine" for the implementation of regulatorSlalom
 * ------------------------------------------------------------------------------
 */
 
@@ -12,7 +12,9 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
 #include "std_msgs/Float64.h"
+#include <zodiac_command/WaypointListMission.h>
 #include <zodiac_command/mathUtility.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <tf/transform_datatypes.h>
 
 
@@ -28,6 +30,9 @@ ros::Publisher boatHeading_pub;
 ros::Publisher errorCourse_pub;
 std_msgs::Float64 helmCmd_msg;
 
+vector<zodiac_command::WaypointMission> waypointLine;
+double boatLatitude = DATA_OUT_OF_RANGE;
+double boatLongitude = DATA_OUT_OF_RANGE;
 double gpsSpeed = DATA_OUT_OF_RANGE;    // m/s
 double gpsCourse = DATA_OUT_OF_RANGE;   // degrees
 double boatHeading = DATA_OUT_OF_RANGE; // degrees
@@ -104,6 +109,47 @@ double regulatorPIDsin(const double courseError)
     return helmCmd;
 }
 
+double regulatorSlalom(const double m_nextWaypointLon, const double m_nextWaypointLat,
+    const double m_prevWaypointLon, const double m_prevWaypointLat, const double m_VesselLon, const double m_VesselLat)
+// regualteur basé sur le papier Slalom
+{
+  double helmCmd;
+
+  const int earthRadius = 6371000; //meters
+
+  array<double, 3> prevWPCoord = {
+      earthRadius * cos(mathUtility::degreeToRadian(m_prevWaypointLat)) * cos(mathUtility::degreeToRadian(m_prevWaypointLon)),
+      earthRadius * cos(mathUtility::degreeToRadian(m_prevWaypointLat)) * sin(mathUtility::degreeToRadian(m_prevWaypointLon)),
+      earthRadius * sin(mathUtility::degreeToRadian(m_prevWaypointLat))};
+
+  array<double, 3> nextWPCoord = {
+      earthRadius * cos(mathUtility::degreeToRadian(m_nextWaypointLat)) * cos(mathUtility::degreeToRadian(m_nextWaypointLon)),
+      earthRadius * cos(mathUtility::degreeToRadian(m_nextWaypointLat)) * sin(mathUtility::degreeToRadian(m_nextWaypointLon)),
+      earthRadius * sin(mathUtility::degreeToRadian(m_nextWaypointLat))};
+
+  array<double, 3> boatCoord = {
+      earthRadius * cos(mathUtility::degreeToRadian(m_VesselLat)) * cos(mathUtility::degreeToRadian(m_VesselLon)),
+      earthRadius * cos(mathUtility::degreeToRadian(m_VesselLat)) * sin(mathUtility::degreeToRadian(m_VesselLon)),
+      earthRadius * sin(mathUtility::degreeToRadian(m_VesselLat))};
+
+  array<double, 2> param_droite = {
+      // coefficent directeur de la droite formee par les deux waypoints
+      (nextWPCoord[1] - prevWPCoord[1]) / (nextWPCoord[0] - prevWPCoord[0]),
+      // ordonnee a l origine
+      prevWPCoord[1] - ((nextWPCoord[1] - prevWPCoord[1]) / (nextWPCoord[0] - prevWPCoord[0])) * prevWPCoord[0]};
+
+  helmCmd = - mathUtility::sawtooth(boatHeading - atan2(param_droite[0] + (1 / 10) * (param_droite[0] * boatCoord[0] + param_droite[1] - boatCoord[1]), 1)) +
+    ((1 / 10) * (param_droite[0] * cos(boatHeading) - sin(boatHeading))) / pow(1 + (param_droite[0] + (1 / 10) * (param_droite[0] * boatCoord[0] + param_droite[1] - boatCoord[1])), 2);
+
+  // Anti wind up and max command
+  if (abs(helmCmd) > maxHelmAngle)
+  {
+      helmCmd = mathUtility::sgn(helmCmd)*maxHelmAngle;
+  }
+
+  return helmCmd;
+
+}
 
 void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
@@ -142,6 +188,24 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     boatHeading_pub.publish(boatHeading_msg);
 }
 
+void waypointLine_callback(const zodiac_command::WaypointListMission::ConstPtr& msg)
+{
+  waypointLine = msg->waypoints;
+}
+
+void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
+{
+    if (fix_msg->status.status >= fix_msg->status.STATUS_FIX)
+    {
+        boatLatitude = fix_msg->latitude;
+        boatLongitude = fix_msg->longitude;
+    }
+    else
+    {
+        ROS_WARN_THROTTLE(5, "No gps fix");
+    }
+}
+
 void desiredCourse_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     desiredCourse = msg->data;
@@ -157,6 +221,11 @@ int main(int argc, char **argv)
     ros::Subscriber vel_sub = nh.subscribe("vel", 1, vel_callback);
     ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
+
+    ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
+    ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
+
+
 
     helmCmd_pub = nh.advertise<std_msgs::Float64>("helm_angle_cmd", 1);
     gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gps_speed", 1);
@@ -178,8 +247,9 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
-        if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) && 
-            (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE))
+        if ((gpsSpeed != DATA_OUT_OF_RANGE) && (gpsCourse != DATA_OUT_OF_RANGE) &&
+            (boatHeading != DATA_OUT_OF_RANGE) && (desiredCourse != DATA_OUT_OF_RANGE) &&
+            (boatLatitude != DATA_OUT_OF_RANGE) && (boatLongitude != DATA_OUT_OF_RANGE))
         {
             double errorCourse = mathUtility::limitAngleRange180(boatHeading - desiredCourse);
 
@@ -198,6 +268,9 @@ int main(int argc, char **argv)
             case 3 : // PIDsin regulator
                 helmCmd_msg.data = regulatorPIDsin(errorCourse) + offsetMotorAngle;
                 break;
+            case 4 :
+                helmCmd_msg.data = regulatorSlalom(waypointLine.at(1).longitude, waypointLine.at(1).latitude,
+                waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude) + offsetMotorAngle;
             }
             helmCmd_pub.publish(helmCmd_msg);
         }
