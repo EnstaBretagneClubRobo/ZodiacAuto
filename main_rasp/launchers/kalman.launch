@@ -3,14 +3,14 @@
 
   <!-- robot_localization node -->
   <node pkg="robot_localization" type="ukf_localization_node" name="ukf_localization_node" respawn="true" clear_params="true">
-    <param param="frequency" value="20"/>
-    <param param="sensor_timeout" value="10"/>
-    <param param="two_d_node" value="true"/>
-    <param name="map_frame" value="zodiac_auto/map"/>
+    <param name="frequency" value="20"/>
+    <param name="sensor_timeout" value="10"/>
+    <param name="two_d_node" value="true"/>
+  
     <param name="world_frame" value="zodiac_auto/map"/>
     <param name="base_link_frame" value="rasp/base_link"/>
 
-    <param name="odom0" value="rasp/odometry/gps">
+    <param name="odom0" value="rasp/odometry/gps"/>
     <param name="imu0" value="rasp/imu"/>
 
     <rosparam param="odom0_config">[true,  true,  false,
