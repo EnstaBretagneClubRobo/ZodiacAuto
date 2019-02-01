@@ -1,0 +1,79 @@
+<launch>
+
+
+  <!-- robot_localization node -->
+  <node pkg="robot_localization" type="ukf_localization_node" name="ukf_localization_node" respawn="true" clear_params="true">
+    <param param="frequency" value="20"/>
+    <param param="sensor_timeout" value="10"/>
+    <param param="two_d_node" value="true"/>
+    <param name="map_frame" value="zodiac_auto/map"/>
+    <param name="world_frame" value="zodiac_auto/map"/>
+    <param name="base_link_frame" value="rasp/base_link"/>
+
+    <param name="odom0" value="rasp/odometry/gps">
+    <param name="imu0" value="rasp/imu"/>
+
+    <rosparam param="odom0_config">[true,  true,  false,
+                                false, false, false,
+                                false, false, false,
+                                false, false, false,
+                                false, false, false]</rosparam>
+
+    <rosparam param="imu0_config">[false, false, false,
+                                    true,  true,  true,
+                                    false, false, false,
+                                    true,  true,  true,
+                                    true,  true,  true]</rosparam>
+
+
+   <param name="odom0_differential" value="false"/>
+   <param name="imu0_relative" value="true"/>
+   <param name="imu0_remove_gravitational_acceleration" value="true"/>
+
+   <rosparam param="process_noise_covariance">[0.05, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0.05, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0.06, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0.025, 0,     0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0.025, 0,    0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.02, 0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.01, 0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.01, 0,
+                                                 0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.015]</rosparam>
+
+
+  <rosparam param="initial_estimate_covariance">[1e-9, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    1e-9, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    1e-9, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    1e-9, 0,    0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    1e-9, 0,    0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     1e-9,  0,    0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                                                 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
+
+   </node>
+
+   <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
+
+    <param name="magnetic_declination_radians" value="0"/>
+    <param name="yaw_offset" value="0"/>
+
+    <remap from="/imu/data" to="/rasp/imu" />
+    <remap from="/gps/fix" to="/rasp/fix" />
+    <remap from="/odometry/filtered" to="/rasp/odometry/filtered" />
+
+  </node>
+
+ </launch>

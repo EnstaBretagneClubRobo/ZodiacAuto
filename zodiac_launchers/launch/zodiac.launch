@@ -49,4 +49,11 @@
 
 </group>
 
+<group ns="rasp">
+  <include file="$(find main)/launchers/kalman.launch"/>
+</group>
+
+
+
+
 </launch>
