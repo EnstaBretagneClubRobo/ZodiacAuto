@@ -27,6 +27,7 @@ ros::Publisher helmCmd_pub;
 ros::Publisher gpsSpeed_pub;
 ros::Publisher gpsCourse_pub;
 ros::Publisher boatHeading_pub;
+ros::Publisher raspHeading_pub;
 ros::Publisher errorCourse_pub;
 std_msgs::Float64 helmCmd_msg;
 
@@ -37,6 +38,11 @@ double gpsSpeed = DATA_OUT_OF_RANGE;    // m/s
 double gpsCourse = DATA_OUT_OF_RANGE;   // degrees
 double boatHeading = DATA_OUT_OF_RANGE; // degrees
 double desiredCourse = DATA_OUT_OF_RANGE;  // degrees
+
+double raspLatitude = DATA_OUT_OF_RANGE;
+double raspLongitude = DATA_OUT_OF_RANGE;
+double raspHeading = DATA_OUT_OF_RANGE; // degrees
+
 
 double I = 0; // integral sum for PIDregulator
 double oldCourseError = 0; // courseError at t-1 for PIDregulator
@@ -206,6 +212,35 @@ void fix_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
     }
 }
 
+void fix_rasp_callback(const sensor_msgs::NavSatFix::ConstPtr& fix_msg)
+{
+    if (fix_msg->status.status >= fix_msg->status.STATUS_FIX)
+    {
+        raspLatitude = fix_msg->latitude;
+        raspLongitude = fix_msg->longitude;
+    }
+    else
+    {
+        ROS_WARN_THROTTLE(5, "No gps fix");
+    }
+}
+
+void imu_rasp_callback(const sensor_msgs::Imu::ConstPtr& msg)
+{
+    tf::Quaternion q(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+
+    double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw));
+    double raspHeading = mathUtility::limitAngleRange(imuHeading - magneticDeclination);
+
+    std_msgs::Float64 raspHeading_msg;
+    raspHeading_msg.data = raspHeading;
+    raspHeading_pub.publish(raspHeading_msg);
+}
+
+
 void desiredCourse_callback(const std_msgs::Float64::ConstPtr& msg)
 {
     desiredCourse = msg->data;
@@ -225,12 +260,14 @@ int main(int argc, char **argv)
     ros::Subscriber waypointLine_sub = nh.subscribe("waypoint_line", 1, waypointLine_callback);
     ros::Subscriber fix_sub = nh.subscribe("fix", 1, fix_callback);
 
+    ros::Subscriber  rasp_imu_sub = nh.subscribe("rasp/imu", 1, imu_rasp_callback);
 
 
     helmCmd_pub = nh.advertise<std_msgs::Float64>("helm_angle_cmd", 1);
     gpsSpeed_pub = nh.advertise<std_msgs::Float64>("gps_speed", 1);
     gpsCourse_pub = nh.advertise<std_msgs::Float64>("gps_course", 1);
     boatHeading_pub = nh.advertise<std_msgs::Float64>("boat_heading", 1);
+    raspHeading_pub = nh.advertise<std_msgs::Float64>("rasp_heading", 1);
     errorCourse_pub = nh.advertise<std_msgs::Float64>("error_course", 1);
 
     nhp.param<double>("courseRegulator/max_helm_angle", maxHelmAngle, 25);
@@ -252,6 +289,7 @@ int main(int argc, char **argv)
             (boatLatitude != DATA_OUT_OF_RANGE) && (boatLongitude != DATA_OUT_OF_RANGE))
         {
             double errorCourse = mathUtility::limitAngleRange180(boatHeading - desiredCourse);
+            double raspErrorCourse = mathUtility::limitAngleRange180(raspHeading - desiredCourse);
 
             std_msgs::Float64 errorCourse_msg;
             errorCourse_msg.data = errorCourse;
@@ -271,6 +309,11 @@ int main(int argc, char **argv)
             case 4 :
                 helmCmd_msg.data = regulatorSlalom(waypointLine.at(1).longitude, waypointLine.at(1).latitude,
                 waypointLine.at(0).longitude, waypointLine.at(0).latitude, boatLongitude, boatLatitude) + offsetMotorAngle;
+            case 5 :
+                errorCourse_msg.data = raspErrorCourse;
+                helmCmd_msg.data = regulatorPID(raspErrorCourse) + offsetMotorAngle;
+
+
             }
             helmCmd_pub.publish(helmCmd_msg);
         }
