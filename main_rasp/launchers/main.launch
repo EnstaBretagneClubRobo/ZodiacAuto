@@ -1,4 +1,7 @@
 <launch>
-  <group name="rasp">
-    <include file="$(find main)/launchers/kalman.launch"/>
-    <include file="$(find main)/launchers/imu.launch"/>
+  <group ns="rasp">
+    <include file="$(find main_rasp)/launchers/kalman.launch"/>
+    <include file="$(find main_rasp)/launchers/imu.launch"/>
+    <include file="$(find main_rasp)/launchers/gps.launch"/>
+  </group>
+</launch>
