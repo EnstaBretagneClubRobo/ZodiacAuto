@@ -10,6 +10,7 @@
 #include <math.h>
 #include <iostream>
 #include <geometry_msgs/TwistStamped.h>
+//#include <sensor_msgs/Imu.h>
 #include <sbg_driver/SbgEkfEuler.h>
 #include "std_msgs/Float64.h"
 #include <zodiac_command/mathUtility.h>
@@ -127,6 +128,21 @@ void vel_callback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     gpsCourse_pub.publish(gpsCourse_msg);
 }
 
+//void imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
+//{
+//    tf::Quaternion q(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+//    tf::Matrix3x3 m(q);
+//    double roll, pitch, yaw;
+//    m.getRPY(roll, pitch, yaw);
+//
+//    double imuHeading = mathUtility::limitAngleRange(-mathUtility::radianToDegree(yaw));
+//    boatHeading = mathUtility::limitAngleRange(imuHeading - magneticDeclination);
+//
+//    std_msgs::Float64 boatHeading_msg;
+//    boatHeading_msg.data = boatHeading;
+//    boatHeading_pub.publish(boatHeading_msg);
+//}
+
 void imu_callback(const sbg_driver::SbgEkfEuler::ConstPtr& msg)
 {
     boatHeading = mathUtility::limitAngleRange(mathUtility::radianToDegree(msg->angle.z) - magneticDeclination);
@@ -141,7 +157,6 @@ void desiredCourse_callback(const std_msgs::Float64::ConstPtr& msg)
     desiredCourse = msg->data;
 }
 
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "courseRegulator");
@@ -149,6 +164,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nhp("~");
 
     ros::Subscriber vel_sub = nh.subscribe("vel", 1, vel_callback);
+	//ros::Subscriber imu_sub = nh.subscribe("imu", 1, imu_callback);
     ros::Subscriber imu_sub = nh.subscribe("ekf_euler", 1, imu_callback);
     ros::Subscriber desiredCourse_sub = nh.subscribe("desired_course", 1, desiredCourse_callback);
 

@@ -4,8 +4,8 @@
 
 <!-- GPS node -->
 <!-- <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_serial_driver" output="screen"> -->
-<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true" respawn_delay="2" >
-  <param name="port" type="string" value="/dev/gps" />
+<node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true" respawn_delay="2">
+  <param name="port" type="string" value="/dev/gpsv" />
   <param name="baud" type="int" value="9600" />
 </node>
 <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver" output="screen" respawn="true" respawn_delay="2" />
@@ -16,10 +16,10 @@
 <include file="$(find sbg_driver)/launch/sbg_ellipseA.launch" />
 
 <!-- Sonar node -->
-<node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" respawn="true" respawn_delay="2" />
+<!-- <node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" respawn="true" respawn_delay="2" /> -->
 
 <!-- Pololu Jrk motorCtr node -->
-<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true" respawn_delay="2" >
+<node pkg="zodiac_auto" type="motorCtr" name="motorCtr" output="screen" respawn="true" respawn_delay="2">
   <param name="path" type="string" value="/dev/pololu" />
 </node>
 
@@ -27,26 +27,26 @@
 <arg name="zodiacCommand_config_file" default="$(find zodiac_launchers)/config/zodiacCommand.yaml"/>
 
 <!-- waypointMgr node -->
-<node pkg="zodiac_command" type="waypointMgr" name="waypointMgr" output="screen" >
+<node pkg="zodiac_command" type="waypointMgr" name="waypointMgr" output="screen" respawn="true" respawn_delay="2">
   <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
 </node>
 
 <!-- lineFollowing node -->
-<node pkg="zodiac_command" type="lineFollowing" name="lineFollowing" output="screen">
+<node pkg="zodiac_command" type="lineFollowing" name="lineFollowing" output="screen" respawn="true" respawn_delay="2">
   <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
 </node>
 
 <!-- courseRegulator node -->
-<node pkg="zodiac_command" type="courseRegulator" name="courseRegulator" output="screen">
+<node pkg="zodiac_command" type="courseRegulator" name="courseRegulator" output="screen" respawn="true" respawn_delay="2">
   <rosparam file="$(arg zodiacCommand_config_file)" command="load"/>
 </node>
 
 <!-- rosbag node -->
 <node pkg="rosbag" type="record" name="rosbag_record"
-       args="record --split --size=1000 -o $(env HOME)/ros_ws/recorded_data/$(optenv now .)/rosbag /zodiac_auto/boat_heading /zodiac_auto/depth /zodiac_auto/desired_course /zodiac_auto/fix /zodiac_auto/gps_course /zodiac_auto/gps_speed /zodiac_auto/helm_angle_cmd /zodiac_auto/helm_motorOn /zodiac_auto/imu /zodiac_auto/waypoint_line /zodiac_auto/signedDistance /zodiac_auto/time_reference /zodiac_auto/vel"/>
+       args="record --split --size=1000 -o $(env PWD)/../../../recorded_data/$(optenv now .)/rosbag /zodiac_auto/boat_heading /zodiac_auto/depth /zodiac_auto/desired_course /zodiac_auto/fix /zodiac_auto/gps_course /zodiac_auto/gps_speed /zodiac_auto/helm_angle_cmd /zodiac_auto/helm_motorOn /zodiac_auto/imu /zodiac_auto/waypoint_line /zodiac_auto/signedDistance /zodiac_auto/time_reference /zodiac_auto/vel" respawn="true" respawn_delay="2" />
 
 <!-- opencpn_interface node -->
-<include file="/home/zodiac/ros_ws/src/ZodiacAuto/OpenCPN2ROS/launchers/opencpn_interface.launch" />
+<include file="../OpenCPN2ROS/launchers/opencpn_interface.launch" />
 
 </group>
 

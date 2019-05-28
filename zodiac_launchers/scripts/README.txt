@@ -27,4 +27,3 @@ Advanced
 
 * Open a terminal (Ctrl+Alt+T) and connect to the embedded computer using `ssh zodiac@10.42.0.1`
 * The main configuration file can be modified using the command `nano /home/zodiac/ros_ws/src/ZodiacAuto/zodiac_launchers/launch/zodiac.launch`
-* If you want to stop the sending of RTK corrections, you can enter `pkill str2str`

@@ -7,8 +7,8 @@ from std_msgs.msg import Float64
 rospy.init_node("depth_publisher")
 depth_pub = rospy.Publisher("depth", Float64, queue_size=1)
 
-ser = serial.Serial(port="/dev/sonar", baudrate=9600)
-#ser = serial.Serial(port="/dev/sonar", baudrate=9600, rtscts=True, dsrdtr=True) # For compatibility with some virtual serial ports (e.g. created by socat) in Python 2.7
+#ser = serial.Serial(port="/dev/sonar", baudrate=9600)
+ser = serial.Serial(port="/dev/sonar", baudrate=9600, rtscts=True, dsrdtr=True) # For compatibility with some virtual serial ports (e.g. created by socat) in Python 2.7
 
 rate = rospy.Rate(5)
 if ser.isOpen():
