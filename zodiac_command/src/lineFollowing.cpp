@@ -163,7 +163,7 @@ int main(int argc, char **argv)
             desiredCourse_msg.data = targetCourse;
             desiredCourse_pub.publish(desiredCourse_msg);
         }
-        else
+        // else
             // ROS_WARN_THROTTLE(10, "lineFollowing : waiting for topic");
 
         loop_rate.sleep();

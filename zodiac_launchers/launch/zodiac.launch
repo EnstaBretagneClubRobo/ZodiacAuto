@@ -12,7 +12,8 @@
 
 <!-- IMU node -->
 <!-- All configs (port, calibration, etc) are in the my_razor.yaml file, located in /opt/ros/kinetic/share/razor_imu_9dof/config. -->
-<include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
+<!-- <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" /> -->
+<include file="$(find sbg_driver)/launch/sbg_ellipseA.launch" />
 
 <!-- Sonar node -->
 <node pkg="echosounder" type="depth_publisher.py" name="depth_publisher" output="screen" respawn="true" respawn_delay="2" />
