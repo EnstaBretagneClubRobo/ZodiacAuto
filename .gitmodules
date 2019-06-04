@@ -1,12 +1,9 @@
-[submodule "tritech_micron"]
-	path = tritech_micron
-	url = https://github.com/mcgill-robotics/ros-tritech-micron.git
-[submodule "razor_imu_9dof"]
-	path = razor_imu_9dof
-	url = https://github.com/lebarsfa/razor_imu_9dof.git
 [submodule "sbg_ros_driver"]
 	path = sbg_ros_driver
 	url = https://github.com/ENSTABretagneRobotics/sbg_ros_driver.git
+[submodule "razor_imu_9dof"]
+	path = razor_imu_9dof
+	url = https://github.com/lebarsfa/razor_imu_9dof.git
 [submodule "OpenCPN2ROS"]
 	path = OpenCPN2ROS
 	url = https://github.com/lebarsfa/OpenCPN2ROS.git
