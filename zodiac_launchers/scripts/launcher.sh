@@ -32,7 +32,8 @@ export ROS_IP=10.42.0.1
 echo "Your IP address is : "$ROS_IP
 export ROS_MASTER_URI=http://$ROS_IP:11311
 export ROS_WS=ros_ws
-#export RTK_RTCM_SERVER_IP=127.0.0.1
+#export RTK_RTCM_SERVER_IP=193.52.45.41
+#export RTK_RTCM_SERVER_PORT=2534
 
 # Detection of whether the real devices are available (assume that /dev/imu is only available on the real robot)
 test `ls -l /dev | grep imu | wc -l` = 0
@@ -109,7 +110,7 @@ if [ "$launch_ntrip" = true ] ; then
     while true; do nohup ~/str2str -in "ntrip://ENSTABRE:$1@78.24.131.136:2101/MAC30" -out tcpcli://127.0.0.1:6001 -n 1000 -p 48.418 -4.472 150.0 > $save_path/str2str.out; sleep 5; done &
 elif [ ! -z $RTK_RTCM_SERVER_IP ]; then
     echo "RTCM RTK server"
-    while true; do nohup ~/str2str -in tcpcli://$RTK_RTCM_SERVER_IP:4001 -out tcpcli://127.0.0.1:6001 > $save_path/str2str.out; sleep 5; done &
+    while true; do nohup ~/str2str -in tcpcli://$RTK_RTCM_SERVER_IP:$RTK_RTCM_SERVER_PORT -out tcpcli://127.0.0.1:6001 > $save_path/str2str.out; sleep 5; done &
 fi
 sleep 1
 
