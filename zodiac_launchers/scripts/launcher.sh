@@ -32,8 +32,8 @@ export ROS_IP=10.42.0.1
 echo "Your IP address is : "$ROS_IP
 export ROS_MASTER_URI=http://$ROS_IP:11311
 export ROS_WS=ros_ws
-#export RTK_RTCM_SERVER_IP=193.52.45.41
-#export RTK_RTCM_SERVER_PORT=2534
+export RTK_RTCM_SERVER_IP=193.52.45.41
+export RTK_RTCM_SERVER_PORT=2534
 
 # Detection of whether the real devices are available (assume that /dev/imu is only available on the real robot)
 test `ls -l /dev | grep imu | wc -l` = 0

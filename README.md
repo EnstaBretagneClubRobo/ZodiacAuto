@@ -3,7 +3,7 @@ This document explains how to set up the embedded computer (__Zotac__) and the l
 * Copy `launcher.sh` (or create a link : `ln -s ~/ros_ws/src/ZodiacAuto/zodiac_launchers/scripts/launcher.sh ~/launcher.sh`) in the home directory of the __Zotac__ (_/home/zodiac_)
 * Copy `mux_server.py` (or create a link : `ln -s ~/ros_ws/src/ZodiacAuto/mux_serial/mux_server.py ~/mux_server.py`) in the home directory of the __Zotac__ (_/home/zodiac_)
 * Build and copy `str2str` (or create a link : `ln -s ~/ros_ws/src/ZodiacAuto/RTKLIB/app/str2str/gcc/str2str ~/str2str`) in the home directory of the __Zotac__ (_/home/zodiac_)
-* Check `ROS_IP`, `ROS_WS`, `RTK_RTCM_SERVER_IP` in `launcher.sh`, run `catkin_make clean && catkin_make` in ROS workspace (`~/ros_ws`)
+* Check `ROS_IP`, `ROS_WS`, `RTK_RTCM_SERVER_IP`, `RTK_RTCM_SERVER_PORT` in `launcher.sh`, run `catkin_make clean && catkin_make` in ROS workspace (`~/ros_ws`)
 * Check the devices `.yaml` and `.launch` files, create udev rules to match the required serial port names, add respawn options in launch files if needed, check if you need to tweak `serial.Serial(..., rtscts=True, dsrdtr=True)` in some nodes due to a problem with virtual serial ports in Python 2.7, etc.
 * In "Startup Applications" (gnome-session-properties) on the __Zotac__, add : 
     * bash -c "sleep 5; cd ~ && . ~/launcher.sh rtkpassword"
