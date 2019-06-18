@@ -1,0 +1,11 @@
+<rtept lat="$LAT" lon="$LON">
+  <time>2018-06-26T11:43:40Z</time>
+  <name>$NAME</name>
+  <sym>diamond</sym>
+  <type>WPT</type>
+  <extensions>
+    <opencpn:auto_name>1</opencpn:auto_name>
+    <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+    <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+  </extensions>
+</rtept>
